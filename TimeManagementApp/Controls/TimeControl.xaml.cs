@@ -5,9 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,7 +27,8 @@ namespace TimeManagementApp.Controls
 
 		[Category("TimeControl")]
 		[Browsable(true)]
-		public int CornerRadius {
+		public int CornerRadius 
+        {
 			get { return (int)this.GetValue(CornerRadiusProperty); }
 			set { this.SetValue(CornerRadiusProperty, value); }
 		}
@@ -92,10 +90,23 @@ namespace TimeManagementApp.Controls
 			set { this.SetValue(SecondsProperty, value); }
 		}
 
+        public static readonly DependencyProperty ReadOnlyProperty = DependencyProperty.Register(
+            "ReadOnly",
+            typeof(bool),
+            typeof(TimeControl),
+            new PropertyMetadata(false));
+
+        [Category("TimeControl")]
+        [Browsable(true)]
+        public bool ReadOnly
+        {
+            get { return (bool)this.GetValue(ReadOnlyProperty); }
+            set { this.SetValue(ReadOnlyProperty, value); }
+        }
+
 		public TimeControl() 
 		{
 			InitializeComponent();
-			this.DataContext = this;
 		}
 
 		private void UIElement_OnPreviewTextInput(object sender, TextCompositionEventArgs e) 

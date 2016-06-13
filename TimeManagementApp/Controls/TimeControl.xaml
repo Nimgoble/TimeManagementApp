@@ -6,7 +6,13 @@
              mc:Ignorable="d" 
 			 xmlns:numericControls="clr-namespace:Gu.Wpf.NumericInput;assembly=Gu.Wpf.NumericInput"
              d:DesignHeight="300" d:DesignWidth="300">
-	<Border CornerRadius="{Binding CornerRadius}" HorizontalAlignment="Center" BorderBrush="LightGray" BorderThickness="{Binding BorderThickness}" Background="White" Padding="{Binding Padding}">
+    <Border 
+        CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+        HorizontalAlignment="Center" 
+        BorderBrush="LightGray" 
+        BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+        Padding="{Binding Padding, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+    >
 		<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
@@ -17,6 +23,8 @@
 			</Grid.ColumnDefinitions>
 
 			<numericControls:IntBox 
+                IsReadOnly="{Binding ReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Grid.Column="0" 
 				HorizontalAlignment="Center" 
 				HorizontalContentAlignment="Center"
@@ -25,24 +33,28 @@
 				MaxValue="99"
 				MinValue="00"
 				StringFormat="00"
-				Value="{Binding Hours, ValidatesOnNotifyDataErrors=True}"
-				FontSize="{Binding FontSize}" 
+				Value="{Binding Hours, ValidatesOnNotifyDataErrors=True, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+				FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
 				BorderThickness="0"
 				ValidationTrigger="PropertyChanged"
 				NumberStyles="Integer"
-				RegexPattern="{Binding RegexPattern}"
+				RegexPattern="{Binding RegexPattern, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				PreviewTextInput="UIElement_OnPreviewTextInput"
+                CanValueBeNull="True"
 			/>
 
 			<TextBlock 
 				Grid.Column="1" 
+                Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Text=":" 
 				HorizontalAlignment="Center" 
 				VerticalAlignment="Center" 
-				FontSize="{Binding FontSize}" 
+				FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
 			/>
 
 			<numericControls:IntBox 
+                IsReadOnly="{Binding ReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Grid.Column="2" 
 				HorizontalAlignment="Center" 
 				HorizontalContentAlignment="Center"
@@ -51,24 +63,28 @@
 				MaxValue="59"
 				MinValue="00"
 				StringFormat="00"
-				Value="{Binding Minutes, ValidatesOnNotifyDataErrors=True}"
-				FontSize="{Binding FontSize}" 
+				Value="{Binding Minutes, ValidatesOnNotifyDataErrors=True, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+				FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
 				BorderThickness="0"
 				ValidationTrigger="PropertyChanged"
 				NumberStyles="Integer"
-				RegexPattern="{Binding RegexPattern}"
+				RegexPattern="{Binding RegexPattern, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				PreviewTextInput="UIElement_OnPreviewTextInput"
+                CanValueBeNull="True"
 			/>
 
 			<TextBlock 
 				Grid.Column="3" 
+                Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Text=":" 
 				HorizontalAlignment="Center" 
 				VerticalAlignment="Center" 
-				FontSize="{Binding FontSize}" 
+				FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
 			/>
 
 			<numericControls:IntBox 
+                IsReadOnly="{Binding ReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Grid.Column="4" 
 				HorizontalAlignment="Center" 
 				HorizontalContentAlignment="Center"
@@ -77,13 +93,14 @@
 				MaxValue="59"
 				MinValue="00"
 				StringFormat="00"
-				Value="{Binding Seconds, ValidatesOnNotifyDataErrors=True}"
-				FontSize="{Binding FontSize}" 
+				Value="{Binding Seconds, ValidatesOnNotifyDataErrors=True, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+				FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
 				BorderThickness="0"
 				ValidationTrigger="PropertyChanged"
 				NumberStyles="Integer"
-				RegexPattern="{Binding RegexPattern}"
+				RegexPattern="{Binding RegexPattern, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				PreviewTextInput="UIElement_OnPreviewTextInput"
+                CanValueBeNull="True"
 			/>
 		</Grid>
 	</Border>
