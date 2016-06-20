@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Caliburn.Micro;
 using TimeManagementApp.Models;
-using GongSolutions.Wpf.DragDrop;
 namespace TimeManagementApp.ViewModels
 {
     public class SetupViewModel : Screen/*, IDropTarget*/
@@ -27,8 +27,8 @@ namespace TimeManagementApp.ViewModels
             this.totalTimeInfo.PropertyChanged += totalTimeInfo_PropertyChanged;
             tasks.CollectionChanged += tasks_CollectionChanged;
 
-            foreach (var task in testTasks)
-                tasks.Add(task);
+            //foreach (var task in testTasks)
+            //    tasks.Add(task);
         }
 
         #region IDropTarget
@@ -58,6 +58,7 @@ namespace TimeManagementApp.ViewModels
                 NotifyOfPropertyChange(() => CanStartTasks);
                 NotifyOfPropertyChange(() => CanAddTask);
                 NotifyOfPropertyChange(() => CanAddTasks);
+                NotifyOfPropertyChange(() => CanMoveToNextSetupState);
                 newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
             }
         }
@@ -78,14 +79,17 @@ namespace TimeManagementApp.ViewModels
         #region Methods
         public void AddTask()
         {
+            //Add it
             tasks.Add(new TaskViewModel(newTimeSliceName, selectedColor, newTimeInfo));
+
+            //Set default values for (potential) new one.
+            NewTimeSliceName = String.Format("Task {0}", tasks.Count + 1);
+            SelectedColor = ColorInfo.GetRandomColor();
 
             newTimeInfo.PropertyChanged -= newTimeInfo_PropertyChanged;
             NewTimeInfo = GetTimeRemaining();
             newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
 
-            SelectedColor = null;
-            NewTimeSliceName = String.Empty;
             NotifyOfPropertyChange(() => CanStartTasks);
             NotifyOfPropertyChange(() => CanAddTasks);
         }
@@ -132,10 +136,68 @@ namespace TimeManagementApp.ViewModels
         {
             get { return TotalTimeInfo.IsPositiveTime && GetTimeRemaining().IsPositiveTime; }
         }
+
+        public void MoveToNextSetupState()
+        {
+            if (wizardViewState == WizardViewState.SetupOverview)
+                return;
+
+            if(wizardViewState == WizardViewState.NumberOfTasks)
+            {
+                tasks.Clear();
+                int averageSeconds = totalTimeInfo.TotalSeconds / requestedTotalNumberOfTasks;
+                int leftoverSeconds = totalTimeInfo.TotalSeconds % requestedTotalNumberOfTasks;
+                
+                for (int i = 1; i <= requestedTotalNumberOfTasks; ++i)
+                    tasks.Add(new TaskViewModel(String.Format("Task {0}", i.ToString()), ColorInfo.GetRandomColor(), new TimeInfoViewModel(averageSeconds)));
+
+                //Add the remaining seconds
+                for(int i = 0; i < leftoverSeconds; ++i)
+                    tasks[i].OriginalTime.TotalSeconds++;
+            }
+
+            WizardViewState++;
+        }
+
+        public bool CanMoveToNextSetupState
+        {
+            get
+            {
+                switch (wizardViewState)
+                {
+                    case WizardViewState.TotalTime:
+                        return TotalTimeInfo.IsPositiveTime;
+                    case WizardViewState.NumberOfTasks:
+                        return RequestedTotalNumberOfTasks > 0 && (TotalTimeInfo.TotalSeconds / RequestedTotalNumberOfTasks) > 0;
+                    case WizardViewState.SetupOverview:
+                        return true;
+                    default:
+                        return true;
+                }
+            }
+        }
+
+        public void SkipSetupWizard()
+        {
+            WizardViewState = WizardViewState.SetupOverview;
+        }
+
+        public TimeInfoViewModel GetTotalTasksTime()
+        {
+            return new TimeInfoViewModel(tasks.Sum(x => x.OriginalTime.TotalSeconds));
+        }
+
+        public TimeInfoViewModel GetTimeRemaining()
+        {
+            var totalTaskTime = GetTotalTasksTime();
+            var rtn = TotalTimeInfo - totalTaskTime;
+            return rtn;
+        }
         #endregion
 
         #region Properties
-        private TimeInfoViewModel totalTimeInfo = new TimeInfoViewModel(0, 0, 30);
+        //private TimeInfoViewModel totalTimeInfo = new TimeInfoViewModel(0, 0, 30);
+        private TimeInfoViewModel totalTimeInfo = new TimeInfoViewModel(0, 0, 0);
         public TimeInfoViewModel TotalTimeInfo
         {
             get { return totalTimeInfo; }
@@ -192,18 +254,6 @@ namespace TimeManagementApp.ViewModels
         private ObservableCollection<TaskViewModel> tasks = new ObservableCollection<TaskViewModel>();
         public ObservableCollection<TaskViewModel> Tasks { get { return tasks; } }
 
-        public TimeInfoViewModel GetTotalTasksTime()
-        {
-            return new TimeInfoViewModel(tasks.Sum(x => x.OriginalTime.TotalSeconds));
-        }
-
-        public TimeInfoViewModel GetTimeRemaining() 
-        {
-            var totalTaskTime = GetTotalTasksTime();
-            var rtn = TotalTimeInfo - totalTaskTime;
-            return rtn; 
-        }
-
         private WizardViewState wizardViewState = WizardViewState.TotalTime;
         public WizardViewState WizardViewState
         {
@@ -216,7 +266,24 @@ namespace TimeManagementApp.ViewModels
                 NotifyOfPropertyChange(() => WizardViewState);
             }
         }
-            
+
+        private int requestedTotalNumberOfTasks = 0;
+        public int RequestedTotalNumberOfTasks
+        {
+            get { return requestedTotalNumberOfTasks; }
+            set
+            {
+                if (value == requestedTotalNumberOfTasks)
+                    return;
+                requestedTotalNumberOfTasks = value;
+                NotifyOfPropertyChange(() => RequestedTotalNumberOfTasks);
+                NotifyOfPropertyChange(() => CanMoveToNextSetupState);
+            }
+        }
+
+        public ObservableCollection<String> validationErrors = new ObservableCollection<string>();
+        public ObservableCollection<String> ValidationErrors { get { return validationErrors; } }
+
         #endregion
 
     }

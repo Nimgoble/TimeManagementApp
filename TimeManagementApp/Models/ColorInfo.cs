@@ -43,7 +43,17 @@ namespace TimeManagementApp.Models
 			get { return brush; }
 		}
 
-		public static List<ColorInfo> GetColorInfos()
+        public override bool Equals(object obj)
+        {
+            if(obj is ColorInfo)
+            {
+                var c = (ColorInfo)obj;
+                return c.Color == this.Color;
+            }
+            return false;
+        }
+
+        public static List<ColorInfo> GetColorInfos()
 		{
 			var colorQuery =
 			from PropertyInfo property in typeof(Colors).GetProperties()
@@ -55,5 +65,13 @@ namespace TimeManagementApp.Models
 			);
 			return colorQuery.ToList();
 		}
+
+        private static Random randomColorSeed = new Random();
+        public static ColorInfo GetRandomColor()
+        {
+            var colorInfos = ColorInfo.GetColorInfos();
+            int colorIndex = randomColorSeed.Next(colorInfos.Count);
+            return colorInfos[colorIndex];
+        }
 	}
 }

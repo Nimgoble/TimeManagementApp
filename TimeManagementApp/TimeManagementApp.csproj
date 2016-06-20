@@ -92,6 +92,7 @@
       <DependentUpon>TimeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\ColorInfo.cs" />
+    <Compile Include="Models\WizardViewState.cs" />
     <Compile Include="ViewModels\SetupViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\TaskViewModel.cs" />
@@ -99,6 +100,15 @@
     <Compile Include="ViewModels\TimeInfoViewModel.cs" />
     <Compile Include="Views\SetupView.xaml.cs">
       <DependentUpon>SetupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetupWizardNumberOfTasksView.xaml.cs">
+      <DependentUpon>SetupWizardNumberOfTasksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetupWizardOverviewView.xaml.cs">
+      <DependentUpon>SetupWizardOverviewView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetupWizardTotalTimeView.xaml.cs">
+      <DependentUpon>SetupWizardTotalTimeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -162,6 +172,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SetupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SetupWizardNumberOfTasksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SetupWizardOverviewView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SetupWizardTotalTimeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

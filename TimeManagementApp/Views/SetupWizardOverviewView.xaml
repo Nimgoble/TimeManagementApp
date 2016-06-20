@@ -1,0 +1,186 @@
+﻿<UserControl x:Class="TimeManagementApp.Views.SetupWizardOverviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:numericControls="clr-namespace:Gu.Wpf.NumericInput;assembly=Gu.Wpf.NumericInput"
+			 xmlns:controls="clr-namespace:TimeManagementApp.Controls"
+			 xmlns:models="clr-namespace:TimeManagementApp.Models"
+             xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+             xmlns:cm="http://www.caliburnproject.org"
+             xmlns:local="clr-namespace:TimeManagementApp.Views"
+             mc:Ignorable="d" 
+             x:Name="setupOverviewView">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <ObjectDataProvider x:Key="colors"
+                        ObjectType="{x:Type models:ColorInfo}"
+                        MethodName="GetColorInfos" />
+                </ResourceDictionary>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="AddTaskGrid" TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanAddTasks}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CanAddTasks}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition MinHeight="150" Height="Auto" />
+            <RowDefinition Height="35" />
+        </Grid.RowDefinitions>
+
+        <!--Total Time and Tasks Header -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="25*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18">Total Time:</Label>
+            <controls:TimeControl 
+				Grid.Column="1" 
+				BorderThickness="2" 
+				Margin="15" 
+				FontSize="32" 
+				RegexPattern="^[0-9]{1,2}$" 
+				Padding="5" 
+				Hours="{Binding TotalTimeInfo.Hours, Mode=TwoWay}"
+				Minutes="{Binding TotalTimeInfo.Minutes, Mode=TwoWay}"
+				Seconds="{Binding TotalTimeInfo.Seconds, Mode=TwoWay}"
+			/>
+
+            <Label Grid.Column="0" Grid.Row="1" FontSize="18" HorizontalAlignment="Center">Tasks</Label>
+        </Grid>
+
+        <!-- Tasks -->
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="2">
+            <StackPanel>
+                <Grid Style="{StaticResource AddTaskGrid}"  HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="cmbAddTaskColor" Height="35" Grid.Column="0" ItemsSource="{Binding Source={StaticResource colors}}" SelectedItem="{Binding SelectedColor}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle Fill="{Binding Brush}" Width="20" Height="20" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ColorName}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Height="35" Grid.Column="1" Text="{Binding NewTimeSliceName, UpdateSourceTrigger=PropertyChanged}" Margin="10,0" Width="250" VerticalContentAlignment="Center" />
+                    <controls:TimeControl 
+                        DataContext="{Binding NewTimeInfo}"
+                        Grid.Column="2" 
+                        FontSize="18" 
+                        CornerRadius="0" 
+                        Margin="10,0"
+                        Hours="{Binding Hours, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+				        Minutes="{Binding Minutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+				        Seconds="{Binding Seconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    />
+                    <Button 
+                        Grid.Column="4" 
+                        Style="{DynamicResource MetroCircleButtonStyle}" 
+                        Width="50" 
+                        Height="50" 
+                        HorizontalAlignment="Left"
+                        Click="AddTask_Click"
+                        cm:Message.Attach="AddTask"
+                    >
+                        <Rectangle Width="20" Height="20">
+                            <Rectangle.Fill>
+                                <VisualBrush Visual="{StaticResource appbar_add}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Button>
+                </Grid>
+                <ListView 
+                    ItemsSource="{Binding Tasks}"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    MaxHeight="200"
+                >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0" Fill="{Binding ColorInfo.Brush}" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <controls:TimeControl 
+                                    Grid.Column="2" 
+                                    DataContext="{Binding Path=OriginalTime}" 
+                                    Hours="{Binding Hours}" 
+                                    Minutes="{Binding Minutes}" 
+                                    Seconds="{Binding Seconds}" 
+                                    ReadOnly="True" 
+                                    FontSize="18"
+                                />
+                                <Button 
+                                    Grid.Column="4" 
+                                    Style="{DynamicResource MetroCircleButtonStyle}" 
+                                    Width="50" 
+                                    Height="50" 
+                                    HorizontalAlignment="Center"
+                                    cm:Action.TargetWithoutContext="{Binding ElementName=setupOverviewView}"
+                                    cm:Message.Attach="RemoveTask($dataContext)"
+                                >
+                                    <Rectangle Width="20" Height="20">
+                                        <Rectangle.Fill>
+                                            <VisualBrush Visual="{StaticResource appbar_delete}" />
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </Border>
+        <Button 
+            Grid.Row="2" 
+            Margin="15, 0" 
+            HorizontalAlignment="Right"
+            VerticalContentAlignment="Center"
+            Content="Start"
+            Height="25"
+            Width="100"
+            Style="{DynamicResource SquareButtonStyle}"
+            cm:Message.Attach="StartTasks"
+        />
+    </Grid>
+</UserControl>
