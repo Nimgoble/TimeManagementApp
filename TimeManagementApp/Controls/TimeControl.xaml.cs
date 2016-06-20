@@ -118,9 +118,53 @@ namespace TimeManagementApp.Controls
 					return;
 
 				Regex regex = new Regex(intBox.RegexPattern);
-				bool isMatch = regex.IsMatch(intBox.Text + e.Text);
+                //If we have some text selected, that's going to be replaced.
+                string resultantText = 
+                    (intBox.SelectionLength > 0) ? 
+                    String.Format("{0}{1}", intBox.Text.Remove(intBox.SelectionStart, intBox.SelectionLength), e.Text) : 
+                    intBox.Text + e.Text;
+
+                bool isMatch = regex.IsMatch(resultantText);
 				e.Handled = !isMatch;
 			}
 		}
-	}
+
+        private void IntBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is IntBox)
+            {
+                var intBox = (IntBox)sender;
+                if (intBox.Text.Length == 2)
+                    MoveToNextUIElement();
+            }
+        }
+        void MoveToNextUIElement()
+        {
+            // Creating a FocusNavigationDirection object and setting it to a
+            // local field that contains the direction selected.
+            FocusNavigationDirection focusDirection = FocusNavigationDirection.Next;
+
+            // MoveFocus takes a TraveralReqest as its argument.
+            TraversalRequest request = new TraversalRequest(focusDirection);
+
+            // Gets the element with keyboard focus.
+            UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+
+            // Change keyboard focus.
+            if (elementWithFocus != null)
+            {
+                elementWithFocus.MoveFocus(request);
+            }
+        }
+
+        private void IntBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is IntBox)
+            {
+                var intBox = (IntBox)sender;
+                intBox.SelectionStart = 0;
+                intBox.SelectionLength = 2;
+            }
+        }
+    }
 }

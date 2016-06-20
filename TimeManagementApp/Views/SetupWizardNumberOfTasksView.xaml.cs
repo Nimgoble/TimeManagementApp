@@ -16,18 +16,13 @@ using System.Windows.Shapes;
 namespace TimeManagementApp.Views
 {
     /// <summary>
-    /// Interaction logic for SetupView.xaml
+    /// Interaction logic for SetupWizardNumberOfTasksView.xaml
     /// </summary>
-    public partial class SetupView : UserControl
+    public partial class SetupWizardNumberOfTasksView : UserControl
     {
-        public SetupView()
+        public SetupWizardNumberOfTasksView()
         {
             InitializeComponent();
-        }
-
-        private void AddTask_Click(object sender, RoutedEventArgs e)
-        {
-            this.cmbAddTaskColor.Focus();
         }
     }
 }

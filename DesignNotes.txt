@@ -1,0 +1,28 @@
+-Settings menu
+--Automatically switch tasks
+--Task ending warning beeps(triple beeps)
+--Highlight Timeleft during last percentage warning
+-Copy tasks.
+-Put task list in TimedTasksView
+--Put slider under task time so that user can change the allowed time of the task
+--"Add Time" button next to "TimeLeft", instead of the slider.
+
+-Make the task setup a wizard, instead of one big screen
+--"Don't show this wizard again."
+--How much time do you have?
+--How many tasks?
+---Automatically divides the time between the tasks, equally(if possible).
+---arrow keys for time per task
+---edit time after task is submitted
+
+
+UI DESIGN
+
+-Too much white
+-Need to pick theme
+
+
+26 / 3 = 8r2
+task 1 = 9 seconds
+task 2 = 9 seconds
+task 3 = 8 seconds

@@ -43,7 +43,7 @@ namespace TimeManagementApp.ViewModels
             }
         }
 
-        private TimeInfoViewModel originalTime;
+        private TimeInfoViewModel originalTime = new TimeInfoViewModel();
         public TimeInfoViewModel OriginalTime
         {
             get { return originalTime; }
@@ -56,17 +56,22 @@ namespace TimeManagementApp.ViewModels
             }
         }
 
-        private TimeInfoViewModel completionTime;
-        public TimeInfoViewModel CompletionTime
+        private TimeInfoViewModel elapsedTime = new TimeInfoViewModel();
+        public TimeInfoViewModel ElapsedTime
         {
-            get { return completionTime; }
+            get { return elapsedTime; }
             set
             {
-                if (value == completionTime)
+                if (value == elapsedTime)
                     return;
-                completionTime = value;
-                NotifyOfPropertyChange(() => CompletionTime);
+                elapsedTime = value;
+                NotifyOfPropertyChange(() => ElapsedTime);
             }
+        }
+
+        public TimeInfoViewModel TimeLeft
+        {
+            get { return originalTime - elapsedTime; }
         }
     }
 }

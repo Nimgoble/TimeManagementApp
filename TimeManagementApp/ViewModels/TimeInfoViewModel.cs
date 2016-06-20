@@ -50,7 +50,8 @@ namespace TimeManagementApp.ViewModels
             {
                 if (value == totalSeconds)
                     return;
-                totalSeconds = (value < 0 ) ? 0 : value; //Cap it at 0
+                //totalSeconds = (value < 0 ) ? 0 : value; //Cap it at 0
+                totalSeconds = value;
                 NotifyOfPropertyChange(() => TotalSeconds);
                 NotifyOfPropertyChange(() => Seconds);
                 NotifyOfPropertyChange(() => Minutes);
@@ -58,16 +59,11 @@ namespace TimeManagementApp.ViewModels
             }
         }
 
-        public bool IsValidTime
-        {
-            get 
-            {
-                return totalSeconds > 0;
-                //return (/*Seconds.HasValue &&*/ Seconds > 0) ||
-                //        (/*Minutes.HasValue &&*/ Minutes > 0) ||
-                //        (/*Hours.HasValue &&*/ Hours > 0);
-            }
-        }
+        public bool IsPositiveTime { get { return totalSeconds > 0; } }
+
+        public bool IsOutOfTime { get { return totalSeconds <= 0; } }
+
+        public bool IsNegativeTime { get { return totalSeconds < 0; } }
 
 
         public static TimeInfoViewModel operator +(TimeInfoViewModel a, TimeInfoViewModel b)
@@ -82,8 +78,7 @@ namespace TimeManagementApp.ViewModels
 
         public override string ToString()
         {
-            DateTime time = new DateTime(1, 1, 1, Hours, Minutes, Seconds);
-            return time.ToString("HH:mm:ss");
+            return String.Format("{0}:{1}:{2}", Hours.ToString().PadLeft(2, '0'), Minutes.ToString("D2"), Seconds.ToString("D2"));
         }
     }
 }

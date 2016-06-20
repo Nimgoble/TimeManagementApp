@@ -41,6 +41,8 @@
 				RegexPattern="{Binding RegexPattern, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				PreviewTextInput="UIElement_OnPreviewTextInput"
                 CanValueBeNull="True"
+                TextChanged="IntBox_TextChanged"
+                FocusManager.GotFocus="IntBox_GotFocus"
 			/>
 
 			<TextBlock 
@@ -71,6 +73,8 @@
 				RegexPattern="{Binding RegexPattern, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				PreviewTextInput="UIElement_OnPreviewTextInput"
                 CanValueBeNull="True"
+                TextChanged="IntBox_TextChanged"
+                FocusManager.GotFocus="IntBox_GotFocus"
 			/>
 
 			<TextBlock 
@@ -101,6 +105,8 @@
 				RegexPattern="{Binding RegexPattern, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				PreviewTextInput="UIElement_OnPreviewTextInput"
                 CanValueBeNull="True"
+                TextChanged="IntBox_TextChanged"
+                FocusManager.GotFocus="IntBox_GotFocus"
 			/>
 		</Grid>
 	</Border>

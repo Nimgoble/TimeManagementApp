@@ -10,7 +10,7 @@
              xmlns:cm="http://www.caliburnproject.org"
              mc:Ignorable="d" 
              x:Name="setupView"
-             d:DesignHeight="300" d:DesignWidth="300">
+             >
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,6 +20,18 @@
                         MethodName="GetColorInfos" />
                 </ResourceDictionary>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="AddTaskGrid" TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanAddTasks}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CanAddTasks}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -63,14 +75,14 @@
         <!-- Tasks -->
         <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="2">
             <StackPanel>
-                <Grid HorizontalAlignment="Center">
+                <Grid Style="{StaticResource AddTaskGrid}"  HorizontalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200" />
                         <ColumnDefinition Width="300" />
                         <ColumnDefinition Width="150"/>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Height="35" Grid.Column="0" ItemsSource="{Binding Source={StaticResource colors}}" SelectedItem="{Binding SelectedColor}">
+                    <ComboBox x:Name="cmbAddTaskColor" Height="35" Grid.Column="0" ItemsSource="{Binding Source={StaticResource colors}}" SelectedItem="{Binding SelectedColor}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -95,7 +107,15 @@
 				        Minutes="{Binding Minutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
 				        Seconds="{Binding Seconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     />
-                    <Button x:Name="AddTask" Grid.Column="4" Style="{DynamicResource MetroCircleButtonStyle}" Width="50" Height="50" HorizontalAlignment="Left">
+                    <Button 
+                        x:Name="AddTask" 
+                        Grid.Column="4" 
+                        Style="{DynamicResource MetroCircleButtonStyle}" 
+                        Width="50" 
+                        Height="50" 
+                        HorizontalAlignment="Left"
+                        Click="AddTask_Click"
+                    >
                         <Rectangle Width="20" Height="20">
                             <Rectangle.Fill>
                                 <VisualBrush Visual="{StaticResource appbar_add}" />
@@ -109,6 +129,7 @@
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.UseDefaultEffectDataTemplate="True"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    MaxHeight="200"
                 >
                     <ListView.ItemTemplate>
                         <DataTemplate>

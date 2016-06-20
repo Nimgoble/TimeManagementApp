@@ -12,12 +12,23 @@ namespace TimeManagementApp.ViewModels
     public class SetupViewModel : Screen/*, IDropTarget*/
     {
         private readonly Conductor<Screen>.Collection.OneActive parent;
+
+        private List<TaskViewModel> testTasks = new List<TaskViewModel>()
+        {
+            new TaskViewModel("Task 1", new ColorInfo("Aqua", System.Windows.Media.Colors.Aqua), new TimeInfoViewModel(0, 0, 10)),
+            new TaskViewModel("Task 2", new ColorInfo("BlueViolet", System.Windows.Media.Colors.BlueViolet), new TimeInfoViewModel(0, 0, 10)),
+            new TaskViewModel("Task 3", new ColorInfo("Chartreuse", System.Windows.Media.Colors.Chartreuse), new TimeInfoViewModel(0, 0, 10))
+        };
+
         public SetupViewModel(Conductor<Screen>.Collection.OneActive parent)
         {
             this.parent = parent;
             this.newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
             this.totalTimeInfo.PropertyChanged += totalTimeInfo_PropertyChanged;
             tasks.CollectionChanged += tasks_CollectionChanged;
+
+            foreach (var task in testTasks)
+                tasks.Add(task);
         }
 
         #region IDropTarget
@@ -46,12 +57,15 @@ namespace TimeManagementApp.ViewModels
             {
                 NotifyOfPropertyChange(() => CanStartTasks);
                 NotifyOfPropertyChange(() => CanAddTask);
+                NotifyOfPropertyChange(() => CanAddTasks);
+                newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
             }
         }
 
         void tasks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => CanStartTasks);
+            NotifyOfPropertyChange(() => CanAddTasks);
         }
 
         void newTimeInfo_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -73,17 +87,21 @@ namespace TimeManagementApp.ViewModels
             SelectedColor = null;
             NewTimeSliceName = String.Empty;
             NotifyOfPropertyChange(() => CanStartTasks);
+            NotifyOfPropertyChange(() => CanAddTasks);
         }
 
+        /// <summary>
+        /// Whether or not we have enough information in the "Add A Task" row to add said task.
+        /// </summary>
         public bool CanAddTask
         {
             get
             {
                 return
                     !String.IsNullOrEmpty(newTimeSliceName) &&
-                    newTimeInfo.IsValidTime &&
+                    newTimeInfo.IsPositiveTime &&
                     selectedColor != null &&
-                    GetTimeRemaining().IsValidTime;
+                    GetTimeRemaining().IsPositiveTime;
             }
         }
 
@@ -92,22 +110,32 @@ namespace TimeManagementApp.ViewModels
             if (task == null)
                 return;
             tasks.Remove(task);
+            newTimeInfo.TotalSeconds += task.OriginalTime.TotalSeconds;
         }
 
         public void StartTasks()
         {
-            TimedTasksViewModel timedTasks = new TimedTasksViewModel(tasks.ToList());
+            TimedTasksViewModel timedTasks = new TimedTasksViewModel(parent, TotalTimeInfo, tasks.ToList(), this);
             parent.ActivateItem(timedTasks);
+            parent.DeactivateItem(this, true);
         }
 
         public bool CanStartTasks
         {
-            get { return TotalTimeInfo.IsValidTime && tasks.Count > 0 && !GetTimeRemaining().IsValidTime; }
+            get { return TotalTimeInfo.IsPositiveTime && tasks.Count > 0 && !GetTimeRemaining().IsPositiveTime; }
+        }
+
+        /// <summary>
+        /// Whether or not we can add more tasks
+        /// </summary>
+        public bool CanAddTasks
+        {
+            get { return TotalTimeInfo.IsPositiveTime && GetTimeRemaining().IsPositiveTime; }
         }
         #endregion
 
         #region Properties
-        private TimeInfoViewModel totalTimeInfo = new TimeInfoViewModel();
+        private TimeInfoViewModel totalTimeInfo = new TimeInfoViewModel(0, 0, 30);
         public TimeInfoViewModel TotalTimeInfo
         {
             get { return totalTimeInfo; }
@@ -174,6 +202,19 @@ namespace TimeManagementApp.ViewModels
             var totalTaskTime = GetTotalTasksTime();
             var rtn = TotalTimeInfo - totalTaskTime;
             return rtn; 
+        }
+
+        private WizardViewState wizardViewState = WizardViewState.TotalTime;
+        public WizardViewState WizardViewState
+        {
+            get { return wizardViewState; }
+            set
+            {
+                if (value == wizardViewState)
+                    return;
+                wizardViewState = value;
+                NotifyOfPropertyChange(() => WizardViewState);
+            }
         }
             
         #endregion
