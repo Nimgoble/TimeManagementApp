@@ -9,5 +9,26 @@
 			 Height="500"
              AllowsTransparency="True"
              d:DesignHeight="300" d:DesignWidth="300">
-    <ContentControl x:Name="ActiveItem" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button x:Name="ShowSettings" Grid.Row="0" Width="125" Content="Settings" Margin="10" HorizontalAlignment="Left">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CanNavigateToSettings}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CanNavigateToSettings}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <ContentControl Grid.Row="1" x:Name="ActiveItem" />
+    </Grid>
+
 </mahAppsControls:MetroWindow>

@@ -11,9 +11,17 @@ namespace TimeManagementApp
 {
 	public class AppBootstrapper : BootstrapperBase 
 	{
-		public AppBootstrapper()
+        private SimpleContainer _container = new SimpleContainer();
+        public AppBootstrapper()
 		{
 			Initialize();
+
+            _container.Instance<IWindowManager>(new WindowManager());
+            _container.Singleton<IEventAggregator, EventAggregator>();
+
+            _container.PerRequest<ShellViewModel>();
+            _container.Singleton<SettingsViewModel>();
+            _container.GetInstance<SettingsViewModel>().LoadSettings();
 		}
 
 		protected override void OnStartup(object sender, StartupEventArgs e) 
@@ -21,5 +29,28 @@ namespace TimeManagementApp
 			DisplayRootViewFor<ShellViewModel>();
 		}
 
-	}
+        protected override void OnExit(object sender, EventArgs e)
+        {
+            _container.GetInstance<SettingsViewModel>().WriteSettings();
+            base.OnExit(sender, e);
+        }
+
+        protected override object GetInstance(Type service, string key)
+        {
+            var instance = _container.GetInstance(service, key);
+            return instance;
+        }
+
+        protected override IEnumerable<object> GetAllInstances(Type service)
+        {
+            var objects = _container.GetAllInstances(service);
+            return objects;
+        }
+
+        protected override void BuildUp(object instance)
+        {
+            _container.BuildUp(instance);
+        }
+
+    }
 }

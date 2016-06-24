@@ -26,6 +26,9 @@ namespace TimeManagementApp.ViewModels
             this.newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
             this.totalTimeInfo.PropertyChanged += totalTimeInfo_PropertyChanged;
             tasks.CollectionChanged += tasks_CollectionChanged;
+            var settings = IoC.Get<SettingsViewModel>();
+            if (settings != null && !settings.ShowSetupWizard)
+                SkipSetupWizard();
 
             //foreach (var task in testTasks)
             //    tasks.Add(task);
