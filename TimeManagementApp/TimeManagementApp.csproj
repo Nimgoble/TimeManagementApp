@@ -53,6 +53,10 @@
       <HintPath>..\packages\Gu.Wpf.NumericInput.0.4.7.0\lib\net45\Gu.Wpf.NumericInput.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
@@ -101,6 +105,7 @@
     </Compile>
     <Compile Include="Models\ColorInfo.cs" />
     <Compile Include="Models\Settings.cs" />
+    <Compile Include="Models\SoundPlayer.cs" />
     <Compile Include="Models\WizardViewState.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SetupViewModel.cs" />
@@ -221,7 +226,12 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\beep.mp3" />
+    <Resource Include="Resources\beep.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\threeBeep.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

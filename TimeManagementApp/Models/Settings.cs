@@ -11,11 +11,14 @@ namespace TimeManagementApp.Models
         public Settings()
         {
             AutoSwitchTasks = false;
+            ShouldWarnUserThatCurrentTasksTimeIsRunningOut = true;
             WarningBeepPercentage = 20.0f;
             HighlightTimeleftDuringWarningPercentage = true;
             ShowSetupWizard = true;
         }
         public bool AutoSwitchTasks { get; set; }
+
+        public bool ShouldWarnUserThatCurrentTasksTimeIsRunningOut { get; set; }
 
         public float WarningBeepPercentage { get; set; }
 

@@ -96,7 +96,7 @@ namespace TimeManagementApp.Controls
             "AutoSwitchToNextTask",
             typeof(bool),
             typeof(TasksTimerControl),
-            new PropertyMetadata(false));
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnAutoSwitchToNextTaskChanged));
 
         [Category("TasksTimerControl")]
         [Browsable(true)]
@@ -274,6 +274,16 @@ namespace TimeManagementApp.Controls
             if (c != null)
                 c.TotalTimeChanged();
         }
+
+        private static void OnAutoSwitchToNextTaskChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TasksTimerControl c = (TasksTimerControl)d;
+            if (c != null)
+            {
+                c.AutoSwitchToNextTask = (bool)e.NewValue;
+            }
+        }
+        
         #endregion
     }
 }

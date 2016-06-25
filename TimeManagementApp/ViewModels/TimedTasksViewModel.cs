@@ -6,12 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Caliburn.Micro;
+using NAudio;
+using TimeManagementApp.Models;
 namespace TimeManagementApp.ViewModels
 {
     public class TimedTasksViewModel : Screen, IDisposable
     {
         private readonly Conductor<Screen>.Collection.OneActive parent;
         private readonly SetupViewModel setupViewModel;
+        private readonly SettingsViewModel settings;
+        private SoundPlayer soundPlayer;
         public TimedTasksViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTimeInfo, List<TaskViewModel> _tasks, SetupViewModel setupViewModel)
         {
             this.parent = parent;
@@ -22,6 +26,22 @@ namespace TimeManagementApp.ViewModels
             this.timer.Elapsed += timer_Elapsed;
             foreach (var task in _tasks)
                 tasks.Add(task);
+
+            this.settings = IoC.Get<SettingsViewModel>();
+            if (settings != null)
+                AutomaticallySwitchTasks = settings.AutoSwitchTasks;
+
+            soundPlayer = new SoundPlayer(new Uri("pack://application:,,,/TimeManagementApp;component/Resources/threeBeep.mp3"));
+            soundPlayer.Initialize();
+        }
+
+        ~TimedTasksViewModel()
+        {
+            if(soundPlayer != null)
+            {
+                soundPlayer.Cleanup();
+                soundPlayer = null;
+            }
         }
 
         void IDisposable.Dispose()
@@ -32,6 +52,7 @@ namespace TimeManagementApp.ViewModels
         protected override void OnViewReady(object view)
         {
             Start();
+            NotifyOfPropertyChange(() => AutomaticallySwitchTasks);
             base.OnViewReady(view);
         }
 
@@ -72,6 +93,26 @@ namespace TimeManagementApp.ViewModels
             Stop();
             this.parent.ActivateItem(new SetupViewModel(parent));
             this.parent.DeactivateItem(this, true);
+        }
+
+        private void CheckShouldSignalWarning()
+        {
+            if (settings == null)
+                return;
+
+            if (!settings.ShouldWarnUserThatCurrentTasksTimeIsRunningOut)
+                return;
+
+            float percentage = ((float)CurrentTask.TimeLeft.TotalSeconds) / ((float)CurrentTask.OriginalTime.TotalSeconds);
+            int timeleftPercentage = (int)(percentage * 100);
+            bool isAtOrBelowWarningThreshold = timeleftPercentage <= settings.WarningBeepPercentage;
+            if(isAtOrBelowWarningThreshold)
+            {
+                //if(settings.HighlightTimeleftDuringWarningPercentage)
+                if(!soundPlayer.HasPlayed)
+                    soundPlayer.Play();
+
+            }
         }
         #endregion
 
@@ -115,6 +156,7 @@ namespace TimeManagementApp.ViewModels
                 if (value == currentTask)
                     return;
                 currentTask = value;
+                soundPlayer.Reset();
                 NotifyOfPropertyChange(() => CurrentTask);
                 NotifyOfPropertyChange(() => CanNextTask);
             }
@@ -134,7 +176,11 @@ namespace TimeManagementApp.ViewModels
                 --timeLeft.TotalSeconds;
                 //Current Task's total elapsed time.
                 if (currentTask != null)
+                {
                     currentTask.ElapsedTime.TotalSeconds++;
+                    CheckShouldSignalWarning();
+                }
+                    
 
                 NotifyOfPropertyChange(() => ElapsedTime);
                 NotifyOfPropertyChange(() => CurrentTaskTimeLeft);
@@ -166,7 +212,6 @@ namespace TimeManagementApp.ViewModels
                     return;
                 automaticallySwitchTasks = value;
                 NotifyOfPropertyChange(() => AutomaticallySwitchTasks);
-                NotifyOfPropertyChange(() => CanNextTask);
             }
         }
 

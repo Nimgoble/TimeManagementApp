@@ -16,6 +16,7 @@ namespace TimeManagementApp.ViewModels
         private Settings settings = new Settings();
         public SettingsViewModel()
         {
+            LoadSettings();
         }
 
         #region Methods
@@ -63,8 +64,9 @@ namespace TimeManagementApp.ViewModels
 
         public void GoBack()
         {
+            WriteSettings();
             this.parent.ActivateItem(previousScreen);
-            this.parent.DeactivateItem(this, true);
+            //this.parent.DeactivateItem(this, false);
         }
         #endregion
 
@@ -78,6 +80,18 @@ namespace TimeManagementApp.ViewModels
                     return;
                 settings.AutoSwitchTasks = value;
                 NotifyOfPropertyChange(() => AutoSwitchTasks);
+            }
+        }
+
+        public bool ShouldWarnUserThatCurrentTasksTimeIsRunningOut
+        {
+            get { return settings.ShouldWarnUserThatCurrentTasksTimeIsRunningOut; }
+            set
+            {
+                if (value == settings.ShouldWarnUserThatCurrentTasksTimeIsRunningOut)
+                    return;
+                settings.ShouldWarnUserThatCurrentTasksTimeIsRunningOut = value;
+                NotifyOfPropertyChange(() => ShouldWarnUserThatCurrentTasksTimeIsRunningOut);
             }
         }
 

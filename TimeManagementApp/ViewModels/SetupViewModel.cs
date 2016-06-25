@@ -77,13 +77,24 @@ namespace TimeManagementApp.ViewModels
             if (e.PropertyName == "Minutes" || e.PropertyName == "Seconds" || e.PropertyName == "Hours")
                 NotifyOfPropertyChange(() => CanAddTask);
         }
+
+        private void task_OriginalTime_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Minutes" || e.PropertyName == "Seconds" || e.PropertyName == "Hours")
+            {
+                NotifyOfPropertyChange(() => CanStartTasks);
+                NotifyOfPropertyChange(() => CanAddTask);
+                NotifyOfPropertyChange(() => CanAddTasks);
+                NotifyOfPropertyChange(() => CanMoveToNextSetupState);
+                newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
+            }
+        }
         #endregion
 
         #region Methods
         public void AddTask()
         {
-            //Add it
-            tasks.Add(new TaskViewModel(newTimeSliceName, selectedColor, newTimeInfo));
+            InternalAddTask(newTimeSliceName, selectedColor, newTimeInfo);
 
             //Set default values for (potential) new one.
             NewTimeSliceName = String.Format("Task {0}", tasks.Count + 1);
@@ -117,6 +128,7 @@ namespace TimeManagementApp.ViewModels
             if (task == null)
                 return;
             tasks.Remove(task);
+            task.OriginalTime.PropertyChanged -= task_OriginalTime_PropertyChanged;
             newTimeInfo.TotalSeconds += task.OriginalTime.TotalSeconds;
         }
 
@@ -152,7 +164,7 @@ namespace TimeManagementApp.ViewModels
                 int leftoverSeconds = totalTimeInfo.TotalSeconds % requestedTotalNumberOfTasks;
                 
                 for (int i = 1; i <= requestedTotalNumberOfTasks; ++i)
-                    tasks.Add(new TaskViewModel(String.Format("Task {0}", i.ToString()), ColorInfo.GetRandomColor(), new TimeInfoViewModel(averageSeconds)));
+                    InternalAddTask(String.Format("Task {0}", i.ToString()), ColorInfo.GetRandomColor(), new TimeInfoViewModel(averageSeconds));
 
                 //Add the remaining seconds
                 for(int i = 0; i < leftoverSeconds; ++i)
@@ -195,6 +207,14 @@ namespace TimeManagementApp.ViewModels
             var totalTaskTime = GetTotalTasksTime();
             var rtn = TotalTimeInfo - totalTaskTime;
             return rtn;
+        }
+
+        private void InternalAddTask(String name, ColorInfo colorInfo, TimeInfoViewModel timeInfo)
+        {
+            //Add it
+            var task = new TaskViewModel(name, colorInfo, timeInfo);
+            tasks.Add(task);
+            task.OriginalTime.PropertyChanged += task_OriginalTime_PropertyChanged;
         }
         #endregion
 

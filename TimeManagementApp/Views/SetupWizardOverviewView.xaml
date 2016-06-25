@@ -122,53 +122,75 @@
                         </Rectangle>
                     </Button>
                 </Grid>
-                <ListView 
+                <DataGrid 
                     ItemsSource="{Binding Tasks}"
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.UseDefaultEffectDataTemplate="True"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     MaxHeight="200"
+                    AutoGenerateColumns="False"
+                    CanUserReorderColumns="False"
+                    CanUserSortColumns="False"
                 >
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="150" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Rectangle Grid.Column="0" Fill="{Binding ColorInfo.Brush}" />
-                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                <controls:TimeControl 
-                                    Grid.Column="2" 
-                                    DataContext="{Binding Path=OriginalTime}" 
-                                    Hours="{Binding Hours}" 
-                                    Minutes="{Binding Minutes}" 
-                                    Seconds="{Binding Seconds}" 
-                                    ReadOnly="True" 
-                                    FontSize="18"
-                                />
-                                <Button 
-                                    Grid.Column="4" 
-                                    Style="{DynamicResource MetroCircleButtonStyle}" 
-                                    Width="50" 
-                                    Height="50" 
-                                    HorizontalAlignment="Center"
-                                    cm:Action.TargetWithoutContext="{Binding ElementName=setupOverviewView}"
-                                    cm:Message.Attach="RemoveTask($dataContext)"
-                                >
-                                    <Rectangle Width="20" Height="20">
-                                        <Rectangle.Fill>
-                                            <VisualBrush Visual="{StaticResource appbar_delete}" />
-                                        </Rectangle.Fill>
-                                    </Rectangle>
-                                </Button>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Color" Width="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Height="35" Grid.Column="0" ItemsSource="{Binding Source={StaticResource colors}}" SelectedItem="{Binding ColorInfo}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="20" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Rectangle Fill="{Binding Brush}" Width="20" Height="20" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding ColorName}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                        <DataGridTemplateColumn Header="Time" Width="150" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <controls:TimeControl 
+                                        DataContext="{Binding Path=OriginalTime}" 
+                                        Hours="{Binding Hours, Mode=TwoWay}" 
+                                        Minutes="{Binding Minutes, Mode=TwoWay}" 
+                                        Seconds="{Binding Seconds, Mode=TwoWay}" 
+                                        FontSize="18"
+                                    />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserResize="False" CanUserReorder="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button 
+                                        Style="{DynamicResource MetroCircleButtonStyle}" 
+                                        Width="50" 
+                                        Height="50" 
+                                        HorizontalAlignment="Center"
+                                        cm:Action.TargetWithoutContext="{Binding ElementName=setupOverviewView}"
+                                        cm:Message.Attach="RemoveTask($dataContext)"
+                                    >
+                                        <Rectangle Width="20" Height="20">
+                                            <Rectangle.Fill>
+                                                <VisualBrush Visual="{StaticResource appbar_delete}" />
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+
+                </DataGrid>
             </StackPanel>
         </Border>
         <Button 

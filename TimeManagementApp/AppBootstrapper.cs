@@ -22,7 +22,9 @@ namespace TimeManagementApp
             _container.PerRequest<ShellViewModel>();
             _container.Singleton<SettingsViewModel>();
             _container.GetInstance<SettingsViewModel>().LoadSettings();
-		}
+
+            log4net.Config.XmlConfigurator.Configure();
+        }
 
 		protected override void OnStartup(object sender, StartupEventArgs e) 
 		{
