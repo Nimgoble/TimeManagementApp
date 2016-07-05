@@ -7,51 +7,29 @@
              xmlns:controls="clr-namespace:TimeManagementApp.Controls"
              xmlns:cm="http://www.caliburnproject.org"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             Focusable="True"
+             d:DesignHeight="300" d:DesignWidth="300"
+            >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="24">How much time do you have?</Label>
         <controls:TimeControl 
-                Grid.Row="2"
-				BorderThickness="2" 
-				Margin="15" 
-				FontSize="32" 
-				RegexPattern="^[0-9]{1,2}$" 
-				Padding="5" 
-				Hours="{Binding TotalTimeInfo.Hours, Mode=TwoWay}"
-				Minutes="{Binding TotalTimeInfo.Minutes, Mode=TwoWay}"
-				Seconds="{Binding TotalTimeInfo.Seconds, Mode=TwoWay}"
-			/>
-
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Button 
-                Grid.Column="0" 
-                Content="Skip Setup Wizard" 
-                Height="25" 
-                Width="125" 
-                Margin="10" 
-                HorizontalAlignment="Right" 
-                cm:Message.Attach="SkipSetupWizard"
-            />
-            <Button 
-                Grid.Column="1" 
-                Content="Next" 
-                Height="25" 
-                Width="125" 
-                Margin="10" 
-                cm:Message.Attach="MoveToNextSetupState"
-            />
-        </Grid>
+            x:Name="timeControl"
+            Grid.Row="2"
+			BorderThickness="2" 
+			Margin="15" 
+			FontSize="32" 
+			RegexPattern="^[0-9]{1,2}$" 
+			Padding="5" 
+			Hours="{Binding TotalTimeInfo.Hours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+			Minutes="{Binding TotalTimeInfo.Minutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+			Seconds="{Binding TotalTimeInfo.Seconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+		/>
     </Grid>
 </UserControl>

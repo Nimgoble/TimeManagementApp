@@ -12,12 +12,21 @@ namespace TimeManagementApp.ViewModels
 {
 	public class ShellViewModel : Conductor<Screen>.Collection.OneActive
     {
-        private SetupViewModel setupViewModel;
-        public ShellViewModel()
+        private readonly IWindowManager windowManager;
+        private HomeViewModel homeViewModel = null;
+        public ShellViewModel(IWindowManager windowManager)
         {
-            setupViewModel = new SetupViewModel(this);
-            this.ActivateItem(setupViewModel);
+            this.windowManager = windowManager;
+            homeViewModel = new HomeViewModel(this);
+            this.ActivateItem(homeViewModel);
             DisplayName = "Time Management App";
+        }
+
+        public void ShowHome()
+        {
+            if(this.ActiveItem != null)
+                this.DeactivateItem(this.ActiveItem, true);
+            this.ActivateItem(homeViewModel);
         }
 
         public void ShowSettings()
@@ -34,11 +43,17 @@ namespace TimeManagementApp.ViewModels
         {
             base.ActivateItem(item);
             NotifyOfPropertyChange(() => CanNavigateToSettings);
+            NotifyOfPropertyChange(() => CanNavigateToHome);
         }
 
         public bool CanNavigateToSettings
         {
             get { return (this.ActiveItem is TimedTasksViewModel) == false && (this.ActiveItem is SettingsViewModel) == false; }
+        }
+
+        public bool CanNavigateToHome
+        {
+            get { return (this.ActiveItem is HomeViewModel) == false; }
         }
     }
 }

@@ -15,7 +15,19 @@ namespace TimeManagementApp.ViewModels
             this.name = name;
             this.colorInfo = colorInfo;
             this.originalTime = originalTime;
+            this.elapsedTime.PropertyChanged += ElapsedTime_PropertyChanged;
         }
+
+        #region Events
+
+        private void ElapsedTime_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(() => TimeLeft);
+        }
+
+        #endregion
+
+        #region Properties
 
         private ColorInfo colorInfo;
         public ColorInfo ColorInfo
@@ -66,6 +78,7 @@ namespace TimeManagementApp.ViewModels
                     return;
                 elapsedTime = value;
                 NotifyOfPropertyChange(() => ElapsedTime);
+                NotifyOfPropertyChange(() => TimeLeft);
             }
         }
 
@@ -73,5 +86,6 @@ namespace TimeManagementApp.ViewModels
         {
             get { return originalTime - elapsedTime; }
         }
+        #endregion
     }
 }

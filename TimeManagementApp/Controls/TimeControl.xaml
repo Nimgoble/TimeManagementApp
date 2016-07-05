@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
 			 xmlns:numericControls="clr-namespace:Gu.Wpf.NumericInput;assembly=Gu.Wpf.NumericInput"
+             GotFocus="UserControl_GotFocus"
+             PreviewGotKeyboardFocus="UserControl_PreviewGotKeyboardFocus"
              d:DesignHeight="300" d:DesignWidth="300">
     <Border 
         CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
@@ -23,6 +25,7 @@
 			</Grid.ColumnDefinitions>
 
 			<numericControls:IntBox 
+                x:Name="HoursBox"
                 IsReadOnly="{Binding ReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                 Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Grid.Column="0" 
@@ -43,6 +46,7 @@
                 CanValueBeNull="True"
                 TextChanged="IntBox_TextChanged"
                 FocusManager.GotFocus="IntBox_GotFocus"
+                Focusable="True"
 			/>
 
 			<TextBlock 
@@ -75,6 +79,7 @@
                 CanValueBeNull="True"
                 TextChanged="IntBox_TextChanged"
                 FocusManager.GotFocus="IntBox_GotFocus"
+                Focusable="True"
 			/>
 
 			<TextBlock 
@@ -87,6 +92,7 @@
 			/>
 
 			<numericControls:IntBox 
+                x:Name="SecondsBox"
                 IsReadOnly="{Binding ReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                 Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 				Grid.Column="4" 
@@ -107,6 +113,7 @@
                 CanValueBeNull="True"
                 TextChanged="IntBox_TextChanged"
                 FocusManager.GotFocus="IntBox_GotFocus"
+                Focusable="True"
 			/>
 		</Grid>
 	</Border>

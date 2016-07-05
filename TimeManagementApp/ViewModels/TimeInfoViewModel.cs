@@ -65,6 +65,8 @@ namespace TimeManagementApp.ViewModels
 
         public bool IsNegativeTime { get { return totalSeconds < 0; } }
 
+        public bool IsZeroTime { get { return totalSeconds == 0; } }
+
 
         public static TimeInfoViewModel operator +(TimeInfoViewModel a, TimeInfoViewModel b)
         {

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Data;
 using Caliburn.Micro;
 using NAudio;
 using TimeManagementApp.Models;
@@ -15,17 +17,22 @@ namespace TimeManagementApp.ViewModels
         private readonly Conductor<Screen>.Collection.OneActive parent;
         private readonly SetupViewModel setupViewModel;
         private readonly SettingsViewModel settings;
+        private readonly IWindowManager windowManager;
         private SoundPlayer soundPlayer;
-        public TimedTasksViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTimeInfo, List<TaskViewModel> _tasks, SetupViewModel setupViewModel)
+        public TimedTasksViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTimeInfo, List<TaskViewModel> _tasks, SetupViewModel setupViewModel/*, IWindowManager windowManager*/)
         {
             this.parent = parent;
             this.setupViewModel = setupViewModel;
             this.totalTimeInfo = totalTimeInfo;
+            //this.windowManager = windowManager;
             timeLeft.TotalSeconds = totalTimeInfo.TotalSeconds;
             this.timer = new Timer(1000);
             this.timer.Elapsed += timer_Elapsed;
             foreach (var task in _tasks)
                 tasks.Add(task);
+
+            //tasksView = CollectionViewSource.GetDefaultView(tasks);
+            //tasksView.CurrentChanging += TasksView_CurrentChanging;
 
             this.settings = IoC.Get<SettingsViewModel>();
             if (settings != null)
@@ -34,6 +41,11 @@ namespace TimeManagementApp.ViewModels
             soundPlayer = new SoundPlayer(new Uri("pack://application:,,,/TimeManagementApp;component/Resources/threeBeep.mp3"));
             soundPlayer.Initialize();
         }
+
+        //private void TasksView_CurrentChanging(object sender, CurrentChangingEventArgs e)
+        //{
+        //    string breakHere = string.Empty;
+        //}
 
         ~TimedTasksViewModel()
         {
@@ -91,7 +103,7 @@ namespace TimeManagementApp.ViewModels
         public void StartNewList()
         {
             Stop();
-            this.parent.ActivateItem(new SetupViewModel(parent));
+            this.parent.ActivateItem(new SetupViewModel(parent/*, windowManager*/));
             this.parent.DeactivateItem(this, true);
         }
 
@@ -113,6 +125,11 @@ namespace TimeManagementApp.ViewModels
                     soundPlayer.Play();
 
             }
+        }
+
+        public void AddTimeToTask(TaskViewModel task)
+        {
+
         }
         #endregion
 
@@ -144,8 +161,14 @@ namespace TimeManagementApp.ViewModels
             }
         }
 
+
         private ObservableCollection<TaskViewModel> tasks = new ObservableCollection<TaskViewModel>();
         public ObservableCollection<TaskViewModel> Tasks { get { return tasks; } }
+
+        ////private List<TaskViewModel> tasksList = new List<TaskViewModel>();
+        //private ObservableCollection<TaskViewModel> tasks = new ObservableCollection<TaskViewModel>();
+        //private ICollectionView tasksView = null;
+        //public ICollectionView TasksView { get { return tasksView; } }
 
         private TaskViewModel currentTask = null;
         public TaskViewModel CurrentTask
@@ -155,7 +178,19 @@ namespace TimeManagementApp.ViewModels
             {
                 if (value == currentTask)
                     return;
-                currentTask = value;
+
+                if
+                (
+                    AutomaticallySwitchTasks ||
+                    (
+                        value == null || value.TimeLeft.IsPositiveTime
+                    )
+                )
+                {
+                    currentTask = value;
+                }
+                    
+
                 soundPlayer.Reset();
                 NotifyOfPropertyChange(() => CurrentTask);
                 NotifyOfPropertyChange(() => CanNextTask);

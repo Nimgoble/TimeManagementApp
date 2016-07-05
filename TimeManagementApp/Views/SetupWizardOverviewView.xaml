@@ -9,6 +9,7 @@
              xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
              xmlns:cm="http://www.caliburnproject.org"
              xmlns:local="clr-namespace:TimeManagementApp.Views"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              x:Name="setupOverviewView">
     <UserControl.Resources>
@@ -19,7 +20,6 @@
                         ObjectType="{x:Type models:ColorInfo}"
                         MethodName="GetColorInfos" />
                 </ResourceDictionary>
-                <ResourceDictionary Source="/Resources/Icons.xaml" />
                 <ResourceDictionary>
                     <Style x:Key="AddTaskGrid" TargetType="Grid">
                         <Style.Triggers>
@@ -38,11 +38,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition MinHeight="150" Height="Auto" />
-            <RowDefinition Height="35" />
+            <RowDefinition MinHeight="150" Height="*" />
         </Grid.RowDefinitions>
 
-        <!--Total Time and Tasks Header -->
+        <!--Total Time -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25*"/>
@@ -67,68 +66,50 @@
 				Minutes="{Binding TotalTimeInfo.Minutes, Mode=TwoWay}"
 				Seconds="{Binding TotalTimeInfo.Seconds, Mode=TwoWay}"
 			/>
-
-            <Label Grid.Column="0" Grid.Row="1" FontSize="18" HorizontalAlignment="Center">Tasks</Label>
         </Grid>
 
-        <!-- Tasks -->
-        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="2">
-            <StackPanel>
-                <Grid Style="{StaticResource AddTaskGrid}"  HorizontalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200" />
-                        <ColumnDefinition Width="300" />
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="cmbAddTaskColor" Height="35" Grid.Column="0" ItemsSource="{Binding Source={StaticResource colors}}" SelectedItem="{Binding SelectedColor}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Rectangle Fill="{Binding Brush}" Width="20" Height="20" />
-                                    <TextBlock Grid.Column="1" Text="{Binding ColorName}" Margin="5,0,0,0" VerticalAlignment="Center" />
-                                </Grid>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <TextBox Height="35" Grid.Column="1" Text="{Binding NewTimeSliceName, UpdateSourceTrigger=PropertyChanged}" Margin="10,0" Width="250" VerticalContentAlignment="Center" />
-                    <controls:TimeControl 
-                        DataContext="{Binding NewTimeInfo}"
-                        Grid.Column="2" 
-                        FontSize="18" 
-                        CornerRadius="0" 
-                        Margin="10,0"
-                        Hours="{Binding Hours, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-				        Minutes="{Binding Minutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-				        Seconds="{Binding Seconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    />
-                    <Button 
-                        Grid.Column="4" 
-                        Style="{DynamicResource MetroCircleButtonStyle}" 
-                        Width="50" 
-                        Height="50" 
-                        HorizontalAlignment="Left"
-                        Click="AddTask_Click"
-                        cm:Message.Attach="AddTask"
-                    >
-                        <Rectangle Width="20" Height="20">
-                            <Rectangle.Fill>
-                                <VisualBrush Visual="{StaticResource appbar_add}" />
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Button>
-                </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="75" />
+            </Grid.RowDefinitions>
+
+            <!-- Tasks Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Label FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0">Tasks</Label>
+                <Button 
+                    Style="{DynamicResource MetroCircleButtonStyle}" 
+                    Width="50" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <cm:ActionMessage MethodName="AddTask">
+                                <cm:Parameter Value="{Binding ElementName=TasksGrid}" />
+                            </cm:ActionMessage>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <Rectangle Width="20" Height="20">
+                        <Rectangle.Fill>
+                            <VisualBrush Visual="{StaticResource appbar_add}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Button>
+            </StackPanel>
+
+            <!-- Tasks -->
+            <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="2">
                 <DataGrid 
+                    x:Name="TasksGrid"
                     ItemsSource="{Binding Tasks}"
+                    SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.UseDefaultEffectDataTemplate="True"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    MaxHeight="200"
+                    MinHeight="200"
                     AutoGenerateColumns="False"
                     CanUserReorderColumns="False"
                     CanUserSortColumns="False"
@@ -189,20 +170,21 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
-
                 </DataGrid>
-            </StackPanel>
-        </Border>
-        <Button 
-            Grid.Row="2" 
-            Margin="15, 0" 
-            HorizontalAlignment="Right"
-            VerticalContentAlignment="Center"
-            Content="Start"
-            Height="25"
-            Width="100"
-            Style="{DynamicResource SquareButtonStyle}"
-            cm:Message.Attach="StartTasks"
-        />
+            </Border>
+            
+            <Button 
+                Grid.Row="2" 
+                Margin="15, 0" 
+                HorizontalAlignment="Right"
+                VerticalContentAlignment="Center"
+                Content="Start"
+                Height="25"
+                Width="100"
+                Style="{DynamicResource SquareButtonStyle}"
+                cm:Message.Attach="StartTasks"
+            />
+        </Grid>
+
     </Grid>
 </UserControl>

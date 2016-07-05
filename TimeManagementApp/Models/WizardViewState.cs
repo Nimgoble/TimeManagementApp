@@ -9,7 +9,6 @@ namespace TimeManagementApp.Models
     public enum WizardViewState
     {
         TotalTime = 0,
-        NumberOfTasks = 1,
-        SetupOverview = 2
+        NumberOfTasks = 1
     }
 }

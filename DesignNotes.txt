@@ -1,17 +1,17 @@
--Settings menu
---Automatically switch tasks
---Task ending warning beeps(triple beeps)
+X-Settings menu
+X--Automatically switch tasks
+X--Task ending warning beeps(triple beeps)
 --Highlight Timeleft during last percentage warning
 -Copy tasks.
 -Put task list in TimedTasksView
 --Put slider under task time so that user can change the allowed time of the task
 --"Add Time" button next to "TimeLeft", instead of the slider.
 
--Make the task setup a wizard, instead of one big screen
---"Don't show this wizard again."
---How much time do you have?
---How many tasks?
----Automatically divides the time between the tasks, equally(if possible).
+X-Make the task setup a wizard, instead of one big screen
+X--"Don't show this wizard again."
+X--How much time do you have?
+X--How many tasks?
+X---Automatically divides the time between the tasks, equally(if possible).
 ---arrow keys for time per task
 ---edit time after task is submitted
 

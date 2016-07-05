@@ -21,44 +21,36 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0" Content="Auto Switch Tasks" Style="{StaticResource fieldStyle}">
+        <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource fieldStyle}">
             <Label.ToolTip>
                 <TextBlock>Whether or not to automatically switch to the next task when the time runs out for the current task.</TextBlock>
             </Label.ToolTip>
+            <TextBlock TextWrapping="WrapWithOverflow">Auto Switch Tasks</TextBlock>
         </Label>
         <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding AutoSwitchTasks, Mode=TwoWay}" Style="{StaticResource valueStyle}" />
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Should Warn That Current Task's Time Is Running Out" Style="{StaticResource fieldStyle}">
-            <Label.ToolTip>
-                <TextBlock>Whether or not to you want to be warned when the current task's time is running out.</TextBlock>
-            </Label.ToolTip>
-        </Label>
-        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShouldWarnUserThatCurrentTasksTimeIsRunningOut, Mode=TwoWay}" Style="{StaticResource valueStyle}" />
-
-        <Label Grid.Row="2" Grid.Column="0" Content="Show Setup Wizard" Style="{StaticResource fieldStyle}">
+        <!--
+        <Label Grid.Row="1" Grid.Column="0" Content="Show Setup Wizard" Style="{StaticResource fieldStyle}">
             <Label.ToolTip>
                 <TextBlock>Whether or not to show the setup wizard when starting a new set of tasks.</TextBlock>
             </Label.ToolTip>
         </Label>
-        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowSetupWizard, Mode=TwoWay}">
-            <CheckBox.Style>
-                <Style TargetType="CheckBox" BasedOn="{StaticResource valueStyle}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ShouldWarnUserThatCurrentTasksTimeIsRunningOut}" Value="True">
-                            <Setter Property="IsEnabled" Value="True" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ShouldWarnUserThatCurrentTasksTimeIsRunningOut}" Value="False">
-                            <Setter Property="IsEnabled" Value="False" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </CheckBox.Style>
-        </CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowSetupWizard, Mode=TwoWay}" Style="{StaticResource valueStyle}" />
+        -->
+        
+        <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource fieldStyle}">
+            <Label.ToolTip>
+                <TextBlock>Whether or not to you want to be warned when the current task's time is running out.</TextBlock>
+            </Label.ToolTip>
+            <TextBlock TextWrapping="WrapWithOverflow">Should Warn That Current Task's Time Is Running Out</TextBlock>
+        </Label>
+        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShouldWarnUserThatCurrentTasksTimeIsRunningOut, Mode=TwoWay}" Style="{StaticResource valueStyle}" />
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Warning Percentage" Style="{StaticResource fieldStyle}">
+        <Label Grid.Row="3" Grid.Column="0" Style="{StaticResource fieldStyle}">
             <Label.ToolTip>
                 <TextBlock>The percentage of a task (rounded down) at which the user will be warned, via a sound cue, that the task is running out of time.</TextBlock>
             </Label.ToolTip>
+            <TextBlock TextWrapping="WrapWithOverflow">Warning Percentage</TextBlock>
         </Label>
         <numericControls:FloatBox 
             Grid.Row="3" 
@@ -82,10 +74,11 @@
             </numericControls:FloatBox.Style>
         </numericControls:FloatBox>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="Highlight Time During Warning Percentage" Style="{StaticResource fieldStyle}">
+        <Label Grid.Row="4" Grid.Column="0" Style="{StaticResource fieldStyle}">
             <Label.ToolTip>
                 <TextBlock>Whether or not the remaining time for the task should be highlighted during the last X percentage of the task.</TextBlock>
             </Label.ToolTip>
+            <TextBlock TextWrapping="WrapWithOverflow">Highlight Time During Warning Percentage</TextBlock>
         </Label>
         <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding HighlightTimeleftDuringWarningPercentage, Mode=TwoWay}" >
             <CheckBox.Style>
@@ -102,6 +95,12 @@
             </CheckBox.Style>
         </CheckBox>
 
-        <Button Grid.Row="5" x:Name="GoBack" Content="Back" Width="125" Height="25" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+        <Button Grid.Row="5" x:Name="GoBack" Width="50" Height="50" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Style="{StaticResource MetroCircleButtonStyle}" ToolTip="Back">
+            <Rectangle Width="20" Height="20">
+                <Rectangle.Fill>
+                    <VisualBrush Visual="{StaticResource appbar_arrow_left}" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Button>
     </Grid>
 </UserControl>

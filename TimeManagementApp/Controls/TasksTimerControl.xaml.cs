@@ -152,23 +152,12 @@ namespace TimeManagementApp.Controls
                     );
                 section.Width = this.ActualWidth * section.WidthPercentage;
 
-                //double width = this.ActualWidth *
-                //    (double)
-                //    (
-                //        ((double)task.OriginalTime.TotalSeconds) / ((double)this.TotalTime.TotalSeconds)
-                //    );
-
                 //New column definition
                 var def = new ColumnDefinition();// { Width = new GridLength(width) };
                 this.RectangleGrid.ColumnDefinitions.Add(def);
                 def.Width = new GridLength(section.WidthPercentage, GridUnitType.Star);
 
-
-                //Rectangle
-                //Rectangle rec = new Rectangle();
-                //rec.Fill = task.ColorInfo.Brush;
-                //rec.Width = width;
-                //rec.Height = this.ActualHeight;
+                //Section
                 section.Height = this.ActualHeight;
                 this.RectangleGrid.Children.Add(section);
                 Grid.SetColumn(section, i);
@@ -184,16 +173,8 @@ namespace TimeManagementApp.Controls
             if(this.TotalTime == null || !this.TotalTime.IsPositiveTime)
                 return;
             
-            double x = (((double)this.ElapsedTime) * this.ActualWidth) / ((double)this.TotalTime.TotalSeconds);
+            double x = (((double)this.ElapsedTime) * OurCanvas.ActualWidth) / ((double)this.TotalTime.TotalSeconds);
             Canvas.SetLeft(Indicator, x);
-
-            //LinearGradientBrush progressOpacityMask = this.RectangleGrid.OpacityMask as LinearGradientBrush;
-            //if (progressOpacityMask == null)
-            //    return;
-
-            //double newCenterOffset = ((double)this.ElapsedTime) / ((double)this.TotalTime.TotalSeconds);
-            //progressOpacityMask.GradientStops[1].Offset = newCenterOffset;
-            //progressOpacityMask.GradientStops[2].Offset = newCenterOffset;
         }
 
         public void UpdateCurrentTask()

@@ -30,7 +30,6 @@ namespace TimeManagementApp.Models
             catch(Exception ex)
             {
                 logger.Error("Sound Player Error", ex);
-                //TODO: Logging
                 isValid = false;
             }
         }
@@ -61,7 +60,6 @@ namespace TimeManagementApp.Models
             catch (Exception ex)
             {
                 logger.Error("Sound Player Error", ex);
-                //TODO: Logging
                 isValid = false;
             }
         }

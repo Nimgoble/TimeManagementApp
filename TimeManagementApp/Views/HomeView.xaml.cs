@@ -16,23 +16,13 @@ using System.Windows.Shapes;
 namespace TimeManagementApp.Views
 {
     /// <summary>
-    /// Interaction logic for TimedTasksView.xaml
+    /// Interaction logic for HomeView.xaml
     /// </summary>
-    public partial class TimedTasksView : UserControl
+    public partial class HomeView : UserControl
     {
-        public TimedTasksView()
+        public HomeView()
         {
             InitializeComponent();
-        }
-
-        private void TasksGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string breakHere = String.Empty;
-        }
-
-        private void TasksGrid_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-            string breakHere = String.Empty;
         }
     }
 }

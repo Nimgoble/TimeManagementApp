@@ -103,16 +103,22 @@
     <Compile Include="Controls\TimeControl.xaml.cs">
       <DependentUpon>TimeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\WpfExtensions.cs" />
     <Compile Include="Models\ColorInfo.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\SoundPlayer.cs" />
     <Compile Include="Models\WizardViewState.cs" />
+    <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SetupViewModel.cs" />
+    <Compile Include="ViewModels\SetupWizardViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\TaskViewModel.cs" />
     <Compile Include="ViewModels\TimedTasksViewModel.cs" />
     <Compile Include="ViewModels\TimeInfoViewModel.cs" />
+    <Compile Include="Views\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
@@ -127,6 +133,9 @@
     </Compile>
     <Compile Include="Views\SetupWizardTotalTimeView.xaml.cs">
       <DependentUpon>SetupWizardTotalTimeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetupWizardView.xaml.cs">
+      <DependentUpon>SetupWizardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -193,6 +202,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\HomeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,6 +223,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SetupWizardTotalTimeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SetupWizardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

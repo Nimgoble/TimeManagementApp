@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using TimeManagementApp.Extensions;
 namespace TimeManagementApp.Views
 {
     /// <summary>
@@ -23,6 +23,24 @@ namespace TimeManagementApp.Views
         public SetupWizardTotalTimeView()
         {
             InitializeComponent();
+            this.Loaded += SetupWizardTotalTimeView_Loaded;
+        }
+
+        private void SetupWizardTotalTimeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            //timeControl.BeginInvoke(d => d.Focus());
+            System.Threading.ThreadPool.QueueUserWorkItem(
+                   (a) =>
+                   {
+                       System.Threading.Thread.Sleep(100);
+                       timeControl.Dispatcher.Invoke(
+                       new Action(() =>
+                       {
+                           timeControl.Focus();
+
+                       }));
+                   }
+                );
         }
     }
 }

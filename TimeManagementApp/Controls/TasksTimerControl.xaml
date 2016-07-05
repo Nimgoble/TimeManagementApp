@@ -6,9 +6,9 @@
              mc:Ignorable="d" 
              SizeChanged="UserControl_SizeChanged"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border x:Name="OuterOpacityMask" CornerRadius="40" BorderBrush="Black" BorderThickness="4">
+    <Border x:Name="OuterOpacityMask" CornerRadius="40" BorderBrush="Black" BorderThickness="4" Padding="0" Margin="0">
         <Grid>
-            <Border Name="myOpacityMask" CornerRadius="40" Background="White" />
+            <Border Name="myOpacityMask" CornerRadius="40" Background="White" Padding="0" Margin="0" />
             <Grid>
                 <Grid.OpacityMask>
                     <VisualBrush Visual="{Binding ElementName=myOpacityMask}" />

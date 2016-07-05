@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Caliburn.Micro;
 using TimeManagementApp.Models;
+using TimeManagementApp.Extensions;
 namespace TimeManagementApp.ViewModels
 {
     public class SetupViewModel : Screen/*, IDropTarget*/
     {
         private readonly Conductor<Screen>.Collection.OneActive parent;
-
+        //private readonly IWindowManager windowManager;
         private List<TaskViewModel> testTasks = new List<TaskViewModel>()
         {
             new TaskViewModel("Task 1", new ColorInfo("Aqua", System.Windows.Media.Colors.Aqua), new TimeInfoViewModel(0, 0, 10)),
@@ -20,18 +21,30 @@ namespace TimeManagementApp.ViewModels
             new TaskViewModel("Task 3", new ColorInfo("Chartreuse", System.Windows.Media.Colors.Chartreuse), new TimeInfoViewModel(0, 0, 10))
         };
 
-        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent)
+        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent/*, IWindowManager windowManager*/)
         {
             this.parent = parent;
-            this.newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
-            this.totalTimeInfo.PropertyChanged += totalTimeInfo_PropertyChanged;
-            tasks.CollectionChanged += tasks_CollectionChanged;
-            var settings = IoC.Get<SettingsViewModel>();
-            if (settings != null && !settings.ShowSetupWizard)
-                SkipSetupWizard();
+            //this.windowManager = windowManager;
+            DoSetup();
 
             //foreach (var task in testTasks)
             //    tasks.Add(task);
+        }
+
+        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTime, List<TaskViewModel> tasks)
+        {
+            this.parent = parent;
+            this.totalTimeInfo.TotalSeconds = totalTime.TotalSeconds;
+            foreach (var task in tasks)
+                this.tasks.Add(task);
+            DoSetup();
+        }
+
+        private void DoSetup()
+        {
+            this.newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
+            this.totalTimeInfo.PropertyChanged += totalTimeInfo_PropertyChanged;
+            tasks.CollectionChanged += tasks_CollectionChanged;
         }
 
         #region IDropTarget
@@ -61,7 +74,6 @@ namespace TimeManagementApp.ViewModels
                 NotifyOfPropertyChange(() => CanStartTasks);
                 NotifyOfPropertyChange(() => CanAddTask);
                 NotifyOfPropertyChange(() => CanAddTasks);
-                NotifyOfPropertyChange(() => CanMoveToNextSetupState);
                 newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
             }
         }
@@ -85,25 +97,38 @@ namespace TimeManagementApp.ViewModels
                 NotifyOfPropertyChange(() => CanStartTasks);
                 NotifyOfPropertyChange(() => CanAddTask);
                 NotifyOfPropertyChange(() => CanAddTasks);
-                NotifyOfPropertyChange(() => CanMoveToNextSetupState);
                 newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
             }
         }
         #endregion
 
         #region Methods
-        public void AddTask()
+        public void AddTask(System.Windows.Controls.DataGrid tasksGrid)
         {
-            InternalAddTask(newTimeSliceName, selectedColor, newTimeInfo);
+            //InternalAddTask(newTimeSliceName, selectedColor, newTimeInfo);
 
-            //Set default values for (potential) new one.
-            NewTimeSliceName = String.Format("Task {0}", tasks.Count + 1);
-            SelectedColor = ColorInfo.GetRandomColor();
+            ////Set default values for (potential) new one.
+            //NewTimeSliceName = String.Format("Task {0}", tasks.Count + 1);
+            //SelectedColor = ColorInfo.GetRandomColor();
 
-            newTimeInfo.PropertyChanged -= newTimeInfo_PropertyChanged;
-            NewTimeInfo = GetTimeRemaining();
-            newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
+            //newTimeInfo.PropertyChanged -= newTimeInfo_PropertyChanged;
+            //NewTimeInfo = GetTimeRemaining();
+            //newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
 
+            SelectedTask = InternalAddTask(String.Format("Task {0}", tasks.Count + 1), ColorInfo.GetRandomColor(), GetTimeRemaining());
+            if (tasksGrid != null)
+            {
+                tasksGrid.ScrollIntoView(selectedTask);
+                var cellInfo = new System.Windows.Controls.DataGridCellInfo(selectedTask, tasksGrid.Columns[1]);
+                int row = tasksGrid.Items.IndexOf(selectedTask);
+                tasksGrid.CurrentCell = cellInfo;
+                var cell = tasksGrid.GetCell(row, 1);
+                if (cell != null)
+                    cell.Focus();
+                tasksGrid.BeginEdit();
+            }
+                
+            NotifyOfPropertyChange(() => CanAddTask);
             NotifyOfPropertyChange(() => CanStartTasks);
             NotifyOfPropertyChange(() => CanAddTasks);
         }
@@ -116,9 +141,9 @@ namespace TimeManagementApp.ViewModels
             get
             {
                 return
-                    !String.IsNullOrEmpty(newTimeSliceName) &&
-                    newTimeInfo.IsPositiveTime &&
-                    selectedColor != null &&
+                    //!String.IsNullOrEmpty(newTimeSliceName) &&
+                    //newTimeInfo.IsPositiveTime &&
+                    //selectedColor != null &&
                     GetTimeRemaining().IsPositiveTime;
             }
         }
@@ -134,14 +159,14 @@ namespace TimeManagementApp.ViewModels
 
         public void StartTasks()
         {
-            TimedTasksViewModel timedTasks = new TimedTasksViewModel(parent, TotalTimeInfo, tasks.ToList(), this);
+            TimedTasksViewModel timedTasks = new TimedTasksViewModel(parent, TotalTimeInfo, tasks.ToList(), this/*, windowManager*/);
             parent.ActivateItem(timedTasks);
             parent.DeactivateItem(this, true);
         }
 
         public bool CanStartTasks
         {
-            get { return TotalTimeInfo.IsPositiveTime && tasks.Count > 0 && !GetTimeRemaining().IsPositiveTime; }
+            get { return TotalTimeInfo.IsPositiveTime && tasks.Count > 0 && GetTimeRemaining().IsZeroTime; }
         }
 
         /// <summary>
@@ -150,51 +175,6 @@ namespace TimeManagementApp.ViewModels
         public bool CanAddTasks
         {
             get { return TotalTimeInfo.IsPositiveTime && GetTimeRemaining().IsPositiveTime; }
-        }
-
-        public void MoveToNextSetupState()
-        {
-            if (wizardViewState == WizardViewState.SetupOverview)
-                return;
-
-            if(wizardViewState == WizardViewState.NumberOfTasks)
-            {
-                tasks.Clear();
-                int averageSeconds = totalTimeInfo.TotalSeconds / requestedTotalNumberOfTasks;
-                int leftoverSeconds = totalTimeInfo.TotalSeconds % requestedTotalNumberOfTasks;
-                
-                for (int i = 1; i <= requestedTotalNumberOfTasks; ++i)
-                    InternalAddTask(String.Format("Task {0}", i.ToString()), ColorInfo.GetRandomColor(), new TimeInfoViewModel(averageSeconds));
-
-                //Add the remaining seconds
-                for(int i = 0; i < leftoverSeconds; ++i)
-                    tasks[i].OriginalTime.TotalSeconds++;
-            }
-
-            WizardViewState++;
-        }
-
-        public bool CanMoveToNextSetupState
-        {
-            get
-            {
-                switch (wizardViewState)
-                {
-                    case WizardViewState.TotalTime:
-                        return TotalTimeInfo.IsPositiveTime;
-                    case WizardViewState.NumberOfTasks:
-                        return RequestedTotalNumberOfTasks > 0 && (TotalTimeInfo.TotalSeconds / RequestedTotalNumberOfTasks) > 0;
-                    case WizardViewState.SetupOverview:
-                        return true;
-                    default:
-                        return true;
-                }
-            }
-        }
-
-        public void SkipSetupWizard()
-        {
-            WizardViewState = WizardViewState.SetupOverview;
         }
 
         public TimeInfoViewModel GetTotalTasksTime()
@@ -209,12 +189,13 @@ namespace TimeManagementApp.ViewModels
             return rtn;
         }
 
-        private void InternalAddTask(String name, ColorInfo colorInfo, TimeInfoViewModel timeInfo)
+        private TaskViewModel InternalAddTask(String name, ColorInfo colorInfo, TimeInfoViewModel timeInfo)
         {
             //Add it
             var task = new TaskViewModel(name, colorInfo, timeInfo);
             tasks.Add(task);
             task.OriginalTime.PropertyChanged += task_OriginalTime_PropertyChanged;
+            return task;
         }
         #endregion
 
@@ -277,30 +258,16 @@ namespace TimeManagementApp.ViewModels
         private ObservableCollection<TaskViewModel> tasks = new ObservableCollection<TaskViewModel>();
         public ObservableCollection<TaskViewModel> Tasks { get { return tasks; } }
 
-        private WizardViewState wizardViewState = WizardViewState.TotalTime;
-        public WizardViewState WizardViewState
+        private TaskViewModel selectedTask = null;
+        public TaskViewModel SelectedTask
         {
-            get { return wizardViewState; }
+            get { return selectedTask; }
             set
             {
-                if (value == wizardViewState)
+                if (value == selectedTask)
                     return;
-                wizardViewState = value;
-                NotifyOfPropertyChange(() => WizardViewState);
-            }
-        }
-
-        private int requestedTotalNumberOfTasks = 0;
-        public int RequestedTotalNumberOfTasks
-        {
-            get { return requestedTotalNumberOfTasks; }
-            set
-            {
-                if (value == requestedTotalNumberOfTasks)
-                    return;
-                requestedTotalNumberOfTasks = value;
-                NotifyOfPropertyChange(() => RequestedTotalNumberOfTasks);
-                NotifyOfPropertyChange(() => CanMoveToNextSetupState);
+                selectedTask = value;
+                NotifyOfPropertyChange(() => SelectedTask);
             }
         }
 

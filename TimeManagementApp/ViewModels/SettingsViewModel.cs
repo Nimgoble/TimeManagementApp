@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Caliburn.Micro;
 using TimeManagementApp.Models;
+using log4net;
 namespace TimeManagementApp.ViewModels
 {
     public class SettingsViewModel : Screen
     {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(typeof(SettingsViewModel));
         private Screen previousScreen;
         private Conductor<Screen>.Collection.OneActive parent;
         private Settings settings = new Settings();
@@ -35,9 +37,10 @@ namespace TimeManagementApp.ViewModels
                             if (settings == null)
                                 settings = new Settings();
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             //TODO: Logging
+                            logger.Error("Error loading settings", ex);
                         }
                     }
                 }

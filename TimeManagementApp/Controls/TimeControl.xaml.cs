@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Gu.Wpf.NumericInput;
+using TimeManagementApp.Extensions;
 
 namespace TimeManagementApp.Controls 
 {
@@ -107,6 +108,7 @@ namespace TimeManagementApp.Controls
 		public TimeControl() 
 		{
 			InitializeComponent();
+            this.Focusable = true;
 		}
 
 		private void UIElement_OnPreviewTextInput(object sender, TextCompositionEventArgs e) 
@@ -134,7 +136,7 @@ namespace TimeManagementApp.Controls
             if (sender is IntBox)
             {
                 var intBox = (IntBox)sender;
-                if (intBox.Text.Length == 2)
+                if (intBox.Text.Length == 2 && intBox != SecondsBox)
                     MoveToNextUIElement();
             }
         }
@@ -165,6 +167,33 @@ namespace TimeManagementApp.Controls
                 intBox.SelectionStart = 0;
                 intBox.SelectionLength = 2;
             }
+        }
+
+        private void UserControl_GotFocus(object sender, RoutedEventArgs e)
+        {
+            string debugMe = String.Empty;
+        }
+
+        private void UserControl_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (e.OldFocus == null && e.NewFocus == this)
+            {
+                //HoursBox.BeginInvoke(d => d.Focus());
+                System.Threading.ThreadPool.QueueUserWorkItem(
+                   (a) =>
+                   {
+                       System.Threading.Thread.Sleep(100);
+                       HoursBox.Dispatcher.Invoke(
+                       new Action(() =>
+                       {
+                           HoursBox.Focus();
+
+                       }));
+                   }
+                );
+            }
+                
+            String debugMe = String.Empty;
         }
     }
 }

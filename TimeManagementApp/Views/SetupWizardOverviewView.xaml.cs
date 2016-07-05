@@ -27,7 +27,7 @@ namespace TimeManagementApp.Views
 
         private void AddTask_Click(object sender, RoutedEventArgs e)
         {
-            this.cmbAddTaskColor.Focus();
+            //this.cmbAddTaskColor.Focus();
         }
     }
 }
