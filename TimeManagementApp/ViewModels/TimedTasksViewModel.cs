@@ -49,16 +49,19 @@ namespace TimeManagementApp.ViewModels
 
         ~TimedTasksViewModel()
         {
-            if(soundPlayer != null)
-            {
-                soundPlayer.Cleanup();
-                soundPlayer = null;
-            }
+            Cleanup();
         }
 
         void IDisposable.Dispose()
         {
-            Stop();
+            Cleanup();
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            if(close)
+                Cleanup();
+            base.OnDeactivate(close);
         }
 
         protected override void OnViewReady(object view)
@@ -69,6 +72,15 @@ namespace TimeManagementApp.ViewModels
         }
 
         #region Methods
+        private void Cleanup()
+        {
+            Stop();
+            if (soundPlayer != null)
+            {
+                soundPlayer.Cleanup();
+                soundPlayer = null;
+            }
+        }
         public void Start()
         {
             timer.Start();

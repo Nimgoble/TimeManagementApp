@@ -4,6 +4,8 @@ using System.Windows.Threading;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 
 namespace TimeManagementApp.Extensions
 {
@@ -58,6 +60,24 @@ namespace TimeManagementApp.Extensions
                 }
             }
             return child;
+        }
+
+        public static T GetParentOfType<T>(this DependencyObject element) where T : DependencyObject
+        {
+            Type type = typeof(T);
+            if (element == null) return null;
+            DependencyObject parent = VisualTreeHelper.GetParent(element);
+            if (parent == null && ((FrameworkElement)element).Parent is DependencyObject) parent = ((FrameworkElement)element).Parent;
+            if (parent == null) return null;
+            else if (parent.GetType() == type || parent.GetType().IsSubclassOf(type)) return parent as T;
+            return GetParentOfType<T>(parent);
+        }
+
+        public static void ClickButton(this Button button)
+        {
+            ButtonAutomationPeer peer = new ButtonAutomationPeer(button);
+            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+            invokeProv.Invoke();
         }
     }
 }

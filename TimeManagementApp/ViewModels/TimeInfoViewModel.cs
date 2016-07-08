@@ -82,5 +82,30 @@ namespace TimeManagementApp.ViewModels
         {
             return String.Format("{0}:{1}:{2}", Hours.ToString().PadLeft(2, '0'), Minutes.ToString("D2"), Seconds.ToString("D2"));
         }
+
+        public string ToEnglishString()
+        {
+            List<string> parts = new List<string>();
+            if (Hours > 0)
+                parts.Add(String.Format("{0} hours", Hours));
+            if (Minutes > 0)
+                parts.Add(String.Format("{0} minutes", Minutes));
+            if (Seconds > 0)
+                parts.Add(String.Format("{0} seconds", Seconds));
+
+            if (!parts.Any())
+                return String.Empty;
+
+            if (parts.Count == 1)
+                return parts[0];
+
+            if (parts.Count == 2)
+                return String.Format("{0} and {1}", parts[0], parts[1]);
+
+            if (parts.Count == 3)
+                return String.Format("{0}, {1}, and {2}", parts[0], parts[1], parts[2]);
+
+            return String.Empty;
+        }
     }
 }

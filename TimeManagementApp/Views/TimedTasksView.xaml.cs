@@ -12,7 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using TimeManagementApp.ViewModels;
+using TimeManagementApp.Extensions;
 namespace TimeManagementApp.Views
 {
     /// <summary>
@@ -25,14 +26,42 @@ namespace TimeManagementApp.Views
             InitializeComponent();
         }
 
-        private void TasksGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TasksGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            string breakHere = String.Empty;
+            TimedTasksViewModel dataContext = (TimedTasksViewModel)this.DataContext;
+            if (dataContext == null)
+                return;
+
+            var source = e.OriginalSource;
+            if (source == null)
+                return;
+
+            if (source is Visual == false || source is IInputElement == false) 
+                return;
+
+            Visual visualSource = (Visual)source;
+            var parentButton = visualSource.GetParentOfType<Button>();
+
+            if (dataContext.AutomaticallySwitchTasks)
+            {
+                if(parentButton != null)
+                    parentButton.ClickButton();
+                e.Handled = true;
+                return;
+            }
         }
 
-        private void TasksGrid_SourceUpdated(object sender, DataTransferEventArgs e)
+        private void TasksGrid_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            string breakHere = String.Empty;
+            TimedTasksViewModel dataContext = (TimedTasksViewModel)this.DataContext;
+            if (dataContext == null)
+                return;
+
+            if (dataContext.AutomaticallySwitchTasks)
+            {
+                e.Handled = true;
+                return;
+            }
         }
     }
 }

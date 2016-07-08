@@ -169,11 +169,6 @@ namespace TimeManagementApp.Controls
             }
         }
 
-        private void UserControl_GotFocus(object sender, RoutedEventArgs e)
-        {
-            string debugMe = String.Empty;
-        }
-
         private void UserControl_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             if (e.OldFocus == null && e.NewFocus == this)
@@ -192,8 +187,6 @@ namespace TimeManagementApp.Controls
                    }
                 );
             }
-                
-            String debugMe = String.Empty;
         }
     }
 }

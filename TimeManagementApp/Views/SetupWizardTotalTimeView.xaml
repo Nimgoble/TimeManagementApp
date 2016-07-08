@@ -26,10 +26,11 @@
 			Margin="15" 
 			FontSize="32" 
 			RegexPattern="^[0-9]{1,2}$" 
-			Padding="5" 
-			Hours="{Binding TotalTimeInfo.Hours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-			Minutes="{Binding TotalTimeInfo.Minutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-			Seconds="{Binding TotalTimeInfo.Seconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+			Padding="5"
+            DataContext="{Binding TotalTimeInfo}"
+			Hours="{Binding Hours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+			Minutes="{Binding Minutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+			Seconds="{Binding Seconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 		/>
     </Grid>
 </UserControl>

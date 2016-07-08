@@ -42,9 +42,12 @@ namespace TimeManagementApp.ViewModels
 
         private void DoSetup()
         {
-            this.newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
             this.totalTimeInfo.PropertyChanged += totalTimeInfo_PropertyChanged;
             tasks.CollectionChanged += tasks_CollectionChanged;
+            foreach (var task in tasks)
+                task.OriginalTime.PropertyChanged += this.task_OriginalTime_PropertyChanged;
+
+            CalculateValidationErrors();
         }
 
         #region IDropTarget
@@ -74,30 +77,26 @@ namespace TimeManagementApp.ViewModels
                 NotifyOfPropertyChange(() => CanStartTasks);
                 NotifyOfPropertyChange(() => CanAddTask);
                 NotifyOfPropertyChange(() => CanAddTasks);
-                newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
+                CalculateValidationErrors();
             }
         }
 
         void tasks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => CanStartTasks);
+            NotifyOfPropertyChange(() => CanAddTask);
             NotifyOfPropertyChange(() => CanAddTasks);
-        }
-
-        void newTimeInfo_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Minutes" || e.PropertyName == "Seconds" || e.PropertyName == "Hours")
-                NotifyOfPropertyChange(() => CanAddTask);
+            CalculateValidationErrors();
         }
 
         private void task_OriginalTime_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Minutes" || e.PropertyName == "Seconds" || e.PropertyName == "Hours")
+           if (e.PropertyName == "Minutes" || e.PropertyName == "Seconds" || e.PropertyName == "Hours")
             {
                 NotifyOfPropertyChange(() => CanStartTasks);
                 NotifyOfPropertyChange(() => CanAddTask);
                 NotifyOfPropertyChange(() => CanAddTasks);
-                newTimeInfo.TotalSeconds = GetTimeRemaining().TotalSeconds;
+                CalculateValidationErrors();
             }
         }
         #endregion
@@ -105,16 +104,6 @@ namespace TimeManagementApp.ViewModels
         #region Methods
         public void AddTask(System.Windows.Controls.DataGrid tasksGrid)
         {
-            //InternalAddTask(newTimeSliceName, selectedColor, newTimeInfo);
-
-            ////Set default values for (potential) new one.
-            //NewTimeSliceName = String.Format("Task {0}", tasks.Count + 1);
-            //SelectedColor = ColorInfo.GetRandomColor();
-
-            //newTimeInfo.PropertyChanged -= newTimeInfo_PropertyChanged;
-            //NewTimeInfo = GetTimeRemaining();
-            //newTimeInfo.PropertyChanged += newTimeInfo_PropertyChanged;
-
             SelectedTask = InternalAddTask(String.Format("Task {0}", tasks.Count + 1), ColorInfo.GetRandomColor(), GetTimeRemaining());
             if (tasksGrid != null)
             {
@@ -131,6 +120,7 @@ namespace TimeManagementApp.ViewModels
             NotifyOfPropertyChange(() => CanAddTask);
             NotifyOfPropertyChange(() => CanStartTasks);
             NotifyOfPropertyChange(() => CanAddTasks);
+            CalculateValidationErrors();
         }
 
         /// <summary>
@@ -140,11 +130,7 @@ namespace TimeManagementApp.ViewModels
         {
             get
             {
-                return
-                    //!String.IsNullOrEmpty(newTimeSliceName) &&
-                    //newTimeInfo.IsPositiveTime &&
-                    //selectedColor != null &&
-                    GetTimeRemaining().IsPositiveTime;
+                return GetTimeRemaining().IsPositiveTime;
             }
         }
 
@@ -154,7 +140,7 @@ namespace TimeManagementApp.ViewModels
                 return;
             tasks.Remove(task);
             task.OriginalTime.PropertyChanged -= task_OriginalTime_PropertyChanged;
-            newTimeInfo.TotalSeconds += task.OriginalTime.TotalSeconds;
+            CalculateValidationErrors();
         }
 
         public void StartTasks()
@@ -197,6 +183,29 @@ namespace TimeManagementApp.ViewModels
             task.OriginalTime.PropertyChanged += task_OriginalTime_PropertyChanged;
             return task;
         }
+
+        private void CalculateValidationErrors()
+        {
+            validationErrors.Clear();
+            if(totalTimeInfo.IsZeroTime)
+            {
+                validationErrors.Add("Please set your Total Time to at least one second.");
+                return;
+            }
+            if(tasks.Count == 0)
+            {
+                validationErrors.Add("Please add at least one task.");
+                return;
+            }
+
+            TimeInfoViewModel timeRemaining = GetTimeRemaining();
+            if (timeRemaining.IsPositiveTime)
+                validationErrors.Add(String.Format("Please use up the remaining {0}, or remove that much time from your Total Time.", timeRemaining.ToEnglishString()));
+            else if (timeRemaining.IsNegativeTime)
+                validationErrors.Add(String.Format("Please remove {0} from your tasks, or add that much time to your Total Time.", new TimeInfoViewModel(-timeRemaining.TotalSeconds).ToEnglishString()));
+
+            NotifyOfPropertyChange(() => HasValidationErrors);
+        }
         #endregion
 
         #region Properties
@@ -211,47 +220,6 @@ namespace TimeManagementApp.ViewModels
                     return;
                 totalTimeInfo = value;
                 NotifyOfPropertyChange(() => TotalTimeInfo);
-            }
-        }
-
-        private TimeInfoViewModel newTimeInfo = new TimeInfoViewModel();
-        public TimeInfoViewModel NewTimeInfo
-        {
-            get { return newTimeInfo; }
-            set
-            {
-                if (value == newTimeInfo)
-                    return;
-                newTimeInfo = value;
-                NotifyOfPropertyChange(() => NewTimeInfo);
-            }
-        }
-
-        private ColorInfo selectedColor;
-        public ColorInfo SelectedColor
-        {
-            get { return selectedColor; }
-            set
-            {
-                if (value == selectedColor)
-                    return;
-                selectedColor = value;
-                NotifyOfPropertyChange(() => SelectedColor);
-                NotifyOfPropertyChange(() => CanAddTask);
-            }
-        }
-
-        private String newTimeSliceName = string.Empty;
-        public String NewTimeSliceName
-        {
-            get { return newTimeSliceName; }
-            set
-            {
-                if (value == newTimeSliceName)
-                    return;
-                newTimeSliceName = value;
-                NotifyOfPropertyChange(() => NewTimeSliceName);
-                NotifyOfPropertyChange(() => CanAddTask);
             }
         }
 
@@ -273,6 +241,11 @@ namespace TimeManagementApp.ViewModels
 
         public ObservableCollection<String> validationErrors = new ObservableCollection<string>();
         public ObservableCollection<String> ValidationErrors { get { return validationErrors; } }
+
+        public bool HasValidationErrors
+        {
+            get { return validationErrors.Count > 0; }
+        }
 
         #endregion
 
