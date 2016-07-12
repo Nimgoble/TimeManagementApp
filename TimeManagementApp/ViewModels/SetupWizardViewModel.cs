@@ -10,9 +10,11 @@ namespace TimeManagementApp.ViewModels
     public class SetupWizardViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly Conductor<Screen>.Collection.OneActive parent;
-        public SetupWizardViewModel(Conductor<Screen>.Collection.OneActive parent)
+        private readonly IWindowManager windowManager;
+        public SetupWizardViewModel(Conductor<Screen>.Collection.OneActive parent, IWindowManager windowManager)
         {
             this.parent = parent;
+            this.windowManager = windowManager;
             totalTimeInfo.PropertyChanged += this.totalTimeInfo_PropertyChanged;
         }
 
@@ -36,7 +38,7 @@ namespace TimeManagementApp.ViewModels
                 for (int i = 0; i < leftoverSeconds; ++i)
                     tasks[i].OriginalTime.TotalSeconds++;
 
-                parent.ActivateItem(new SetupViewModel(parent, totalTimeInfo, tasks));
+                parent.ActivateItem(new SetupViewModel(parent, totalTimeInfo, tasks, windowManager));
             }
 
             WizardViewState++;

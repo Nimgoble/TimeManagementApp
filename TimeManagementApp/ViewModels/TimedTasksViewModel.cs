@@ -19,12 +19,12 @@ namespace TimeManagementApp.ViewModels
         private readonly SettingsViewModel settings;
         private readonly IWindowManager windowManager;
         private SoundPlayer soundPlayer;
-        public TimedTasksViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTimeInfo, List<TaskViewModel> _tasks, SetupViewModel setupViewModel/*, IWindowManager windowManager*/)
+        public TimedTasksViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTimeInfo, List<TaskViewModel> _tasks, SetupViewModel setupViewModel, IWindowManager windowManager)
         {
             this.parent = parent;
             this.setupViewModel = setupViewModel;
             this.totalTimeInfo = totalTimeInfo;
-            //this.windowManager = windowManager;
+            this.windowManager = windowManager;
             timeLeft.TotalSeconds = totalTimeInfo.TotalSeconds;
             this.timer = new Timer(1000);
             this.timer.Elapsed += timer_Elapsed;
@@ -84,6 +84,11 @@ namespace TimeManagementApp.ViewModels
         public void Start()
         {
             timer.Start();
+            if(settings != null)
+            {
+                foreach (var task in tasks)
+                    task.WarningPercentage = settings.WarningBeepPercentage;
+            }
         }
 
         public void Stop()
@@ -115,7 +120,7 @@ namespace TimeManagementApp.ViewModels
         public void StartNewList()
         {
             Stop();
-            this.parent.ActivateItem(new SetupViewModel(parent/*, windowManager*/));
+            this.parent.ActivateItem(new SetupViewModel(parent, windowManager));
             this.parent.DeactivateItem(this, true);
         }
 
@@ -127,21 +132,51 @@ namespace TimeManagementApp.ViewModels
             if (!settings.ShouldWarnUserThatCurrentTasksTimeIsRunningOut)
                 return;
 
-            float percentage = ((float)CurrentTask.TimeLeft.TotalSeconds) / ((float)CurrentTask.OriginalTime.TotalSeconds);
-            int timeleftPercentage = (int)(percentage * 100);
-            bool isAtOrBelowWarningThreshold = timeleftPercentage <= settings.WarningBeepPercentage;
-            if(isAtOrBelowWarningThreshold)
+            if (CurrentTask.IsInWarningPercentage)
             {
-                //if(settings.HighlightTimeleftDuringWarningPercentage)
-                if(!soundPlayer.HasPlayed)
+                if (!soundPlayer.HasPlayed)
                     soundPlayer.Play();
-
             }
+        }
+
+        private TaskViewModel FindNextTask(TaskViewModel currentTask)
+        {
+            if (currentTask == null || tasks.Last() == currentTask)
+                return null;
+
+            for(int i = tasks.IndexOf(currentTask) + 1; i < tasks.Count; ++i)
+            {
+                if (!tasks[i].OriginalTime.IsPositiveTime)
+                    continue;
+                return tasks[i];
+            }
+
+            return null;
         }
 
         public void AddTimeToTask(TaskViewModel task)
         {
+            var addTime = new AddTimeViewModel(task, timeLeft);
+            bool? result = windowManager.ShowDialog(addTime);
+            if (result == true)
+            {
 
+            }
+        }
+
+        private void AddTimeToTask(TaskViewModel task, TimeInfoViewModel time)
+        {
+            if (task == null)
+                return;
+            if (time.IsZeroTime)
+                return;
+
+            //TaskViewModel theNextTask = null;
+            //while((theNextTask = FindNextTask(task)) != null && time.IsPositiveTime)
+            //{
+            //    int delta = Math.Min(time.TotalSeconds, theNextTask.TimeLeft.TotalSeconds);
+            //    task.OriginalTime.TotalSeconds += 
+            //}
         }
         #endregion
 
@@ -149,9 +184,15 @@ namespace TimeManagementApp.ViewModels
 
         void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            ++ElapsedTime;
-            if (ElapsedTime >= totalTimeInfo.TotalSeconds)
-                Stop();
+            Execute.OnUIThread
+            (
+                () =>
+                {
+                    ++ElapsedTime;
+                    if (ElapsedTime >= totalTimeInfo.TotalSeconds)
+                        Stop();
+                }
+            );
         }
 
         #endregion
@@ -183,6 +224,7 @@ namespace TimeManagementApp.ViewModels
         //public ICollectionView TasksView { get { return tasksView; } }
 
         private TaskViewModel currentTask = null;
+        private TaskViewModel nextTask = null;
         public TaskViewModel CurrentTask
         {
             get { return currentTask; }
@@ -191,17 +233,14 @@ namespace TimeManagementApp.ViewModels
                 if (value == currentTask)
                     return;
 
-                if
-                (
-                    AutomaticallySwitchTasks ||
-                    (
-                        value == null || value.TimeLeft.IsPositiveTime
-                    )
-                )
-                {
-                    currentTask = value;
-                }
-                    
+                if (currentTask != null)
+                    currentTask.IsActiveTask = false;
+
+                currentTask = value;
+                if (currentTask != null)
+                    currentTask.IsActiveTask = true;
+
+                nextTask = FindNextTask(value);
 
                 soundPlayer.Reset();
                 NotifyOfPropertyChange(() => CurrentTask);
@@ -225,6 +264,12 @@ namespace TimeManagementApp.ViewModels
                 if (currentTask != null)
                 {
                     currentTask.ElapsedTime.TotalSeconds++;
+                    if(nextTask != null && currentTask.ElapsedTime.TotalSeconds > currentTask.OriginalTime.TotalSeconds)
+                    {
+                        nextTask.OriginalTime.TotalSeconds--;
+                        if (!nextTask.OriginalTime.IsPositiveTime)
+                            nextTask = FindNextTask(nextTask);
+                    }
                     CheckShouldSignalWarning();
                 }
                     

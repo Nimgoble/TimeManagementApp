@@ -65,13 +65,59 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <controls:TimeControl 
-                                        DataContext="{Binding Path=TimeLeft}" 
-                                        Hours="{Binding Hours, Mode=TwoWay}" 
-                                        Minutes="{Binding Minutes, Mode=TwoWay}" 
-                                        Seconds="{Binding Seconds, Mode=TwoWay}" 
+                                        Hours="{Binding TimeLeft.Hours, Mode=TwoWay}" 
+                                        Minutes="{Binding TimeLeft.Minutes, Mode=TwoWay}" 
+                                        Seconds="{Binding TimeLeft.Seconds, Mode=TwoWay}" 
                                         FontSize="18"
                                         ReadOnly="True"
-                                    />
+                                    >
+                                        <controls:TimeControl.Style>
+                                            <Style TargetType="controls:TimeControl">
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsInWarningPercentage, Mode=OneWay}" Value="True" />
+                                                            <Condition Binding="{Binding IsActiveTask}" Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Background" Value="Red" />
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsInWarningPercentage, Mode=OneWay}" Value="True" />
+                                                            <Condition Binding="{Binding IsActiveTask}" Value="False" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Background" Value="Transparent" />
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsInWarningPercentage, Mode=OneWay}" Value="False" />
+                                                            <Condition Binding="{Binding IsActiveTask}" Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Background" Value="Transparent" />
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsInWarningPercentage, Mode=OneWay}" Value="False" />
+                                                            <Condition Binding="{Binding IsActiveTask}" Value="False" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Background" Value="Transparent" />
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </controls:TimeControl.Style>
+                                    </controls:TimeControl>
+                                    <!--
                                     <Button 
                                         Style="{DynamicResource MetroCircleButtonStyle}" 
                                         Width="50" 
@@ -89,6 +135,7 @@
                                             </Rectangle.Fill>
                                         </Rectangle>
                                     </Button>
+                                    -->
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

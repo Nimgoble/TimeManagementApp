@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TimeManagementApp.Views"
              mc:Ignorable="d" >
-    <StackPanel>
-        <TextBlock x:Name="ParentTextBlock" Margin="10, 20" VerticalAlignment="Center" FontSize="32">Welcome to the Time Management App!</TextBlock>
+    <StackPanel VerticalAlignment="Top" Margin="10">
+        <TextBlock x:Name="ParentTextBlock" Margin="10, 20" VerticalAlignment="Center" FontSize="32">Time Management App</TextBlock>
         <WrapPanel Margin="10">
             <TextBlock VerticalAlignment="Center" FontSize="18" Margin="0,0,5,0" >We can</TextBlock>
             <TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Margin="0,0,5,0">walk you through the setup process</TextBlock>

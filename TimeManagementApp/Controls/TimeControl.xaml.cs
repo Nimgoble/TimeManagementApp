@@ -109,9 +109,49 @@ namespace TimeManagementApp.Controls
 		{
 			InitializeComponent();
             this.Focusable = true;
+            this.Loaded += TimeControl_Loaded;
 		}
 
-		private void UIElement_OnPreviewTextInput(object sender, TextCompositionEventArgs e) 
+        private void TimeControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (this.Style != null)
+            {
+                foreach(var trigger in Style.Triggers)
+                {
+                    if(trigger is MultiDataTrigger)
+                    {
+                        var multiDataTrigger = trigger as MultiDataTrigger;
+                        if (multiDataTrigger == null)
+                            continue;
+
+                        foreach(var condition in multiDataTrigger.Conditions)
+                        {
+                        }
+
+                        foreach (var thing in multiDataTrigger.EnterActions)
+                        {
+                        }
+
+                        foreach (var thing in multiDataTrigger.ExitActions)
+                        {
+                        }
+                    }
+                    string debugMe = string.Empty;
+                }
+            }
+
+        }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            if(e.Property.Name == "Background")
+            {
+                string debugMe = string.Empty;
+            }
+            base.OnPropertyChanged(e);
+        }
+
+        private void UIElement_OnPreviewTextInput(object sender, TextCompositionEventArgs e) 
 		{
 			if (sender is IntBox) 
 			{

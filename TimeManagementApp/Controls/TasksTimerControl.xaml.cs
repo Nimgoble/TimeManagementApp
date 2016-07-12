@@ -146,9 +146,10 @@ namespace TimeManagementApp.Controls
             foreach(var task in Tasks)
             {
                 TaskSectionControl section = new TaskSectionControl(task);
+                int maxTime = Math.Max(task.OriginalTime.TotalSeconds, task.ElapsedTime.TotalSeconds);
                 section.WidthPercentage = (double)
                     (
-                        ((double)task.OriginalTime.TotalSeconds) / ((double)this.TotalTime.TotalSeconds)
+                        ((double)maxTime) / ((double)this.TotalTime.TotalSeconds)
                     );
                 section.Width = this.ActualWidth * section.WidthPercentage;
 
@@ -206,8 +207,26 @@ namespace TimeManagementApp.Controls
                 else
                 {
                     //Adjust widths here.
-                     
+                    UpdateSections();
                 }
+            }
+        }
+
+        private void UpdateSections()
+        {
+            for(int i = 0; i < taskSections.Count; ++i)
+            {
+                var kvp = taskSections.ElementAt(i);
+                var column = this.RectangleGrid.ColumnDefinitions.ElementAt(i);
+                var task = kvp.Key;
+                var section = kvp.Value;
+                int maxTime = Math.Max(task.OriginalTime.TotalSeconds, task.ElapsedTime.TotalSeconds);
+                section.WidthPercentage = (double)
+                    (
+                        ((double)maxTime) / ((double)this.TotalTime.TotalSeconds)
+                    );
+                section.Width = this.ActualWidth * section.WidthPercentage;
+                column.Width = new GridLength(section.WidthPercentage, GridUnitType.Star);
             }
         }
 

@@ -109,6 +109,7 @@
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\SoundPlayer.cs" />
     <Compile Include="Models\WizardViewState.cs" />
+    <Compile Include="ViewModels\AddTimeViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SetupViewModel.cs" />
@@ -117,6 +118,9 @@
     <Compile Include="ViewModels\TaskViewModel.cs" />
     <Compile Include="ViewModels\TimedTasksViewModel.cs" />
     <Compile Include="ViewModels\TimeInfoViewModel.cs" />
+    <Compile Include="Views\AddTimeView.xaml.cs">
+      <DependentUpon>AddTimeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
     </Compile>
@@ -200,6 +204,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddTimeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

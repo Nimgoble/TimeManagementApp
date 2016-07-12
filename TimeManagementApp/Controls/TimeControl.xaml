@@ -13,6 +13,7 @@
         BorderBrush="LightGray" 
         BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
         Padding="{Binding Padding, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+        Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
     >
 		<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 			<Grid.ColumnDefinitions>

@@ -13,7 +13,7 @@ namespace TimeManagementApp.ViewModels
     public class SetupViewModel : Screen/*, IDropTarget*/
     {
         private readonly Conductor<Screen>.Collection.OneActive parent;
-        //private readonly IWindowManager windowManager;
+        private readonly IWindowManager windowManager;
         private List<TaskViewModel> testTasks = new List<TaskViewModel>()
         {
             new TaskViewModel("Task 1", new ColorInfo("Aqua", System.Windows.Media.Colors.Aqua), new TimeInfoViewModel(0, 0, 10)),
@@ -21,19 +21,20 @@ namespace TimeManagementApp.ViewModels
             new TaskViewModel("Task 3", new ColorInfo("Chartreuse", System.Windows.Media.Colors.Chartreuse), new TimeInfoViewModel(0, 0, 10))
         };
 
-        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent/*, IWindowManager windowManager*/)
+        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent, IWindowManager windowManager)
         {
             this.parent = parent;
-            //this.windowManager = windowManager;
+            this.windowManager = windowManager;
             DoSetup();
 
             //foreach (var task in testTasks)
             //    tasks.Add(task);
         }
 
-        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTime, List<TaskViewModel> tasks)
+        public SetupViewModel(Conductor<Screen>.Collection.OneActive parent, TimeInfoViewModel totalTime, List<TaskViewModel> tasks, IWindowManager windowManager)
         {
             this.parent = parent;
+            this.windowManager = windowManager;
             this.totalTimeInfo.TotalSeconds = totalTime.TotalSeconds;
             foreach (var task in tasks)
                 this.tasks.Add(task);
@@ -104,7 +105,8 @@ namespace TimeManagementApp.ViewModels
         #region Methods
         public void AddTask(System.Windows.Controls.DataGrid tasksGrid)
         {
-            SelectedTask = InternalAddTask(String.Format("Task {0}", tasks.Count + 1), ColorInfo.GetRandomColor(), GetTimeRemaining());
+            //GetTimeRemaining()
+            SelectedTask = InternalAddTask(String.Format("Task {0}", tasks.Count + 1), ColorInfo.GetRandomColor(), new TimeInfoViewModel());
             if (tasksGrid != null)
             {
                 tasksGrid.ScrollIntoView(selectedTask);
@@ -145,7 +147,7 @@ namespace TimeManagementApp.ViewModels
 
         public void StartTasks()
         {
-            TimedTasksViewModel timedTasks = new TimedTasksViewModel(parent, TotalTimeInfo, tasks.ToList(), this/*, windowManager*/);
+            TimedTasksViewModel timedTasks = new TimedTasksViewModel(parent, TotalTimeInfo, tasks.ToList(), this, windowManager);
             parent.ActivateItem(timedTasks);
             parent.DeactivateItem(this, true);
         }

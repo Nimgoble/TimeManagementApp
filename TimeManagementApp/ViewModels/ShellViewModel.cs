@@ -17,7 +17,7 @@ namespace TimeManagementApp.ViewModels
         public ShellViewModel(IWindowManager windowManager)
         {
             this.windowManager = windowManager;
-            homeViewModel = new HomeViewModel(this);
+            homeViewModel = new HomeViewModel(this, windowManager);
             this.ActivateItem(homeViewModel);
             DisplayName = "Time Management App";
         }

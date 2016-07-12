@@ -161,11 +161,13 @@ namespace TimeManagementApp.Controls
         private void BindToTaskPropertyChanges(TaskViewModel task)
         {
             task.ElapsedTime.PropertyChanged += ElapsedTime_PropertyChanged;
+            //task.OriginalTime.PropertyChanged += OriginalTime_PropertyChanged;
         }
 
         private void UnbindToTaskPropertyChanges(TaskViewModel task)
         {
             task.ElapsedTime.PropertyChanged -= ElapsedTime_PropertyChanged;
+            //task.OriginalTime.PropertyChanged -= OriginalTime_PropertyChanged;
         }
 
         private void ElapsedTime_PropertyChanged(object sender, PropertyChangedEventArgs e)

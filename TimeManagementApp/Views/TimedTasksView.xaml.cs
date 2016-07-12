@@ -41,13 +41,28 @@ namespace TimeManagementApp.Views
 
             Visual visualSource = (Visual)source;
             var parentButton = visualSource.GetParentOfType<Button>();
+            var parentRow = visualSource.GetParentOfType<DataGridRow>();
+
+            if (parentButton != null)
+            {
+                parentButton.ClickButton();
+                e.Handled = true;
+                return;
+            }
 
             if (dataContext.AutomaticallySwitchTasks)
             {
-                if(parentButton != null)
-                    parentButton.ClickButton();
-                e.Handled = true;
-                return;
+            }
+            else
+            {
+                if (parentRow == null)
+                    return;
+
+                TaskViewModel task = parentRow.DataContext as TaskViewModel;
+                if (task == null)
+                    return;
+
+                //if(task.)
             }
         }
 
